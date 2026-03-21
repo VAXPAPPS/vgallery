@@ -101,11 +101,11 @@ class _VenomScaffoldState extends State<VenomScaffold> {
       // 3. Inputs
       inputDecorationTheme: currentTheme.inputDecorationTheme.copyWith(
         labelStyle: TextStyle(color: _textColor),
-        hintStyle: TextStyle(color: _textColor.withOpacity(0.6)),
+        hintStyle: TextStyle(color: _textColor.withValues(alpha: 0.6)),
         prefixStyle: TextStyle(color: _textColor),
         suffixStyle: TextStyle(color: _textColor),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: _textColor.withOpacity(0.3)),
+          borderSide: BorderSide(color: _textColor.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
@@ -134,7 +134,7 @@ class _VenomScaffoldState extends State<VenomScaffold> {
       // 6. TabBar
       tabBarTheme: currentTheme.tabBarTheme.copyWith(
         labelColor: _textColor,
-        unselectedLabelColor: _textColor.withOpacity(0.6),
+        unselectedLabelColor: _textColor.withValues(alpha: 0.6),
       ),
 
       // 7. Dialogs & Sheets
@@ -144,7 +144,7 @@ class _VenomScaffoldState extends State<VenomScaffold> {
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
-        contentTextStyle: TextStyle(color: _textColor.withOpacity(0.8)),
+        contentTextStyle: TextStyle(color: _textColor.withValues(alpha: 0.8)),
       ),
       bottomSheetTheme: currentTheme.bottomSheetTheme.copyWith(
         // Background color usually handled by container, but could be set here
@@ -184,15 +184,15 @@ class _VenomScaffoldState extends State<VenomScaffold> {
       // 12. Navigation
       bottomNavigationBarTheme: currentTheme.bottomNavigationBarTheme.copyWith(
         selectedItemColor: _textColor,
-        unselectedItemColor: _textColor.withOpacity(0.6),
+        unselectedItemColor: _textColor.withValues(alpha: 0.6),
         selectedLabelStyle: TextStyle(color: _textColor),
-        unselectedLabelStyle: TextStyle(color: _textColor.withOpacity(0.6)),
+        unselectedLabelStyle: TextStyle(color: _textColor.withValues(alpha: 0.6)),
       ),
       navigationRailTheme: currentTheme.navigationRailTheme.copyWith(
         selectedLabelTextStyle: TextStyle(color: _textColor),
-        unselectedLabelTextStyle: TextStyle(color: _textColor.withOpacity(0.6)),
+        unselectedLabelTextStyle: TextStyle(color: _textColor.withValues(alpha: 0.6)),
         selectedIconTheme: IconThemeData(color: _textColor),
-        unselectedIconTheme: IconThemeData(color: _textColor.withOpacity(0.6)),
+        unselectedIconTheme: IconThemeData(color: _textColor.withValues(alpha: 0.6)),
       ),
 
       // 13. Feedback
@@ -213,7 +213,7 @@ class _VenomScaffoldState extends State<VenomScaffold> {
         // Text color usually inherited from bodyText, but good to have
       ),
       dividerTheme: currentTheme.dividerTheme.copyWith(
-        color: _textColor.withOpacity(0.1),
+        color: _textColor.withValues(alpha: 0.1),
       ),
 
       // 15. Selection Controls
@@ -377,11 +377,11 @@ class VenomWindowButton extends StatefulWidget {
   final VoidCallback onPressed;
 
   const VenomWindowButton({
-    Key? key,
+    super.key,
     required this.color,
     required this.icon,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   State<VenomWindowButton> createState() => _VenomWindowButtonState();
@@ -409,7 +409,7 @@ class _VenomWindowButtonState extends State<VenomWindowButton> {
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: widget.color.withOpacity(0.8),
+                      color: widget.color.withValues(alpha: 0.8),
                       blurRadius: 10, // زيادة التوهج قليلاً
                       spreadRadius: 2,
                     ),
@@ -423,7 +423,7 @@ class _VenomWindowButtonState extends State<VenomWindowButton> {
               child: Icon(
                 widget.icon,
                 size: 10,
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
               ),
             ),
           ),

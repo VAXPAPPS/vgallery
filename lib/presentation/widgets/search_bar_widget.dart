@@ -17,10 +17,10 @@ class SearchBarWidget extends StatelessWidget {
       style: const TextStyle(fontSize: 13, color: Colors.white),
       decoration: InputDecoration(
         hintText: 'بحث عن صورة...',
-        hintStyle: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.3)),
-        prefixIcon: Icon(Icons.search, size: 18, color: Colors.white.withOpacity(0.3)),
+        hintStyle: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.3)),
+        prefixIcon: Icon(Icons.search, size: 18, color: Colors.white.withValues(alpha: 0.3)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
+        fillColor: Colors.white.withValues(alpha: 0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,

@@ -24,7 +24,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
           // أزرار الأقسام
           _buildSectionTabs(),
 
-          Divider(color: Colors.white.withOpacity(0.06), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
 
           // محتوى القسم
           Expanded(
@@ -159,10 +159,10 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
             trackHeight: 3,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-            activeTrackColor: Colors.white.withOpacity(0.4),
-            inactiveTrackColor: Colors.white.withOpacity(0.08),
+            activeTrackColor: Colors.white.withValues(alpha: 0.4),
+            inactiveTrackColor: Colors.white.withValues(alpha: 0.08),
             thumbColor: Colors.white,
-            overlayColor: Colors.white.withOpacity(0.1),
+            overlayColor: Colors.white.withValues(alpha: 0.1),
           ),
           child: Slider(
             value: value,
@@ -313,7 +313,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
       style: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w600,
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.white.withValues(alpha: 0.3),
         letterSpacing: 0.5,
       ),
     );
@@ -356,9 +356,9 @@ class _TabButtonState extends State<_TabButton> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               color: widget.isActive
-                  ? Colors.white.withOpacity(0.08)
+                  ? Colors.white.withValues(alpha: 0.08)
                   : _isHovered
-                      ? Colors.white.withOpacity(0.04)
+                      ? Colors.white.withValues(alpha: 0.04)
                       : Colors.transparent,
             ),
             child: Column(
@@ -420,23 +420,23 @@ class _ActionButtonState extends State<_ActionButton> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: _isHovered
-                  ? Colors.white.withOpacity(0.08)
-                  : Colors.white.withOpacity(0.04),
-              border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.white.withValues(alpha: 0.04),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
             ),
             child: Column(
               children: [
                 RotatedBox(
                   quarterTurns: widget.iconRotation,
                   child: Icon(widget.icon,
-                      size: 18, color: Colors.white.withOpacity(0.6)),
+                      size: 18, color: Colors.white.withValues(alpha: 0.6)),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   widget.label,
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -480,14 +480,14 @@ class _FilterButtonState extends State<_FilterButton> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             color: widget.isActive
-                ? Colors.white.withOpacity(0.12)
+                ? Colors.white.withValues(alpha: 0.12)
                 : _isHovered
-                    ? Colors.white.withOpacity(0.06)
-                    : Colors.white.withOpacity(0.03),
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.white.withValues(alpha: 0.03),
             border: Border.all(
               color: widget.isActive
-                  ? Colors.white.withOpacity(0.2)
-                  : Colors.white.withOpacity(0.05),
+                  ? Colors.white.withValues(alpha: 0.2)
+                  : Colors.white.withValues(alpha: 0.05),
             ),
           ),
           child: Row(
@@ -536,12 +536,12 @@ class _CropRatioChip extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           color: isActive
-              ? Colors.white.withOpacity(0.12)
-              : Colors.white.withOpacity(0.04),
+              ? Colors.white.withValues(alpha: 0.12)
+              : Colors.white.withValues(alpha: 0.04),
           border: Border.all(
             color: isActive
-                ? Colors.white.withOpacity(0.2)
-                : Colors.white.withOpacity(0.06),
+                ? Colors.white.withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.06),
           ),
         ),
         child: Text(
@@ -573,9 +573,9 @@ class _CropInputFieldsState extends State<_CropInputFields> {
 
   InputDecoration _fieldDecor(String label) => InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.3)),
+        labelStyle: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.3)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.04),
+        fillColor: Colors.white.withValues(alpha: 0.04),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
           borderSide: BorderSide.none,
@@ -644,7 +644,7 @@ class _CropInputFieldsState extends State<_CropInputFields> {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.08),
+              backgroundColor: Colors.white.withValues(alpha: 0.08),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 10),
               shape: RoundedRectangleBorder(
@@ -684,9 +684,9 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
 
   InputDecoration _fieldDecor(String label) => InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.3)),
+        labelStyle: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.3)),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.04),
+        fillColor: Colors.white.withValues(alpha: 0.04),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
           borderSide: BorderSide.none,
@@ -736,13 +736,13 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
                   setState(() => _maintainAspect = v ?? true),
               activeColor: Colors.white24,
               checkColor: Colors.white,
-              side: BorderSide(color: Colors.white.withOpacity(0.2)),
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
             ),
             Text(
               'الحفاظ على النسبة',
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -774,7 +774,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.08),
+              backgroundColor: Colors.white.withValues(alpha: 0.08),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 10),
               shape: RoundedRectangleBorder(
@@ -800,12 +800,12 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
-          color: Colors.white.withOpacity(0.04),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
+          color: Colors.white.withValues(alpha: 0.04),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.5)),
+          style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.5)),
         ),
       ),
     );
@@ -819,7 +819,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           letterSpacing: 0.5,
         ),
       ),

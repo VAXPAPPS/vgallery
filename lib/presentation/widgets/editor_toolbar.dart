@@ -22,9 +22,9 @@ class EditorToolbar extends StatelessWidget {
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
         border: Border(
-          bottom: BorderSide(color: Colors.white.withOpacity(0.06)),
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
         ),
       ),
       child: Row(
@@ -104,7 +104,7 @@ class EditorToolbar extends StatelessWidget {
           Container(
             width: 1,
             height: 24,
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
           ),
           const SizedBox(width: 16),
 
@@ -122,9 +122,9 @@ class EditorToolbar extends StatelessWidget {
             icon: const Icon(Icons.save_outlined, size: 16),
             label: const Text('حفظ', style: TextStyle(fontSize: 12)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.12),
+              backgroundColor: Colors.white.withValues(alpha: 0.12),
               foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.white.withOpacity(0.04),
+              disabledBackgroundColor: Colors.white.withValues(alpha: 0.04),
               disabledForegroundColor: Colors.white24,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               minimumSize: Size.zero,
@@ -175,15 +175,15 @@ class _ToolbarButtonState extends State<_ToolbarButton> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               color: _isHovered && !widget.disabled
-                  ? Colors.white.withOpacity(0.08)
+                  ? Colors.white.withValues(alpha: 0.08)
                   : Colors.transparent,
             ),
             child: Icon(
               widget.icon,
               size: 18,
               color: widget.disabled
-                  ? Colors.white.withOpacity(0.15)
-                  : Colors.white.withOpacity(0.7),
+                  ? Colors.white.withValues(alpha: 0.15)
+                  : Colors.white.withValues(alpha: 0.7),
             ),
           ),
         ),

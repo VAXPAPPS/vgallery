@@ -138,7 +138,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.black.withOpacity(0.7),
+              Colors.black.withValues(alpha: 0.7),
               Colors.transparent,
             ],
           ),
@@ -227,7 +227,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: 0.4),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -255,7 +255,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: 0.4),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -300,8 +300,8 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isActive
-                        ? Colors.white.withOpacity(0.8)
-                        : Colors.white.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha: 0.8)
+                        : Colors.white.withValues(alpha: 0.1),
                     width: isActive ? 2 : 1,
                   ),
                 ),
@@ -314,7 +314,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                           gaplessPlayback: true,
                         )
                       : Container(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           child: const Icon(Icons.image, size: 16,
                               color: Colors.white24),
                         ),
@@ -334,7 +334,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(

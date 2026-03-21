@@ -58,7 +58,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.15),
+              backgroundColor: Colors.white.withValues(alpha: 0.15),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('حفظ', style: TextStyle(color: Colors.white)),
@@ -121,12 +121,12 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                       onSelected: (_) {
                         setDialogState(() => selectedFormat = fmt.toLowerCase());
                       },
-                      selectedColor: Colors.white.withOpacity(0.2),
+                      selectedColor: Colors.white.withValues(alpha: 0.2),
                       labelStyle: TextStyle(
                         color: isActive ? Colors.white : Colors.white54,
                         fontSize: 12,
                       ),
-                      backgroundColor: Colors.white.withOpacity(0.05),
+                      backgroundColor: Colors.white.withValues(alpha: 0.05),
                     ),
                   );
                 }).toList(),
@@ -152,7 +152,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.15),
+                backgroundColor: Colors.white.withValues(alpha: 0.15),
               ),
               onPressed: () => Navigator.pop(ctx, {
                 'format': selectedFormat,
@@ -219,7 +219,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.15),
+                          backgroundColor: Colors.white.withValues(alpha: 0.15),
                         ),
                         onPressed: () {
                           Navigator.pop(ctx);
@@ -250,7 +250,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                 // الحاجز
                 Container(
                   width: 1,
-                  color: Colors.white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                 ),
 
                 // منطقة المعاينة

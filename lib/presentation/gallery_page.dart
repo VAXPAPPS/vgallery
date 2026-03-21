@@ -264,7 +264,7 @@ class _GalleryPageState extends State<GalleryPage> {
           height: 36,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            color: isActive ? Colors.white.withOpacity(0.1) : Colors.transparent,
+            color: isActive ? Colors.white.withValues(alpha: 0.1) : Colors.transparent,
           ),
           child: Icon(
             icon,
@@ -312,13 +312,13 @@ class _GalleryPageState extends State<GalleryPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.photo_library_outlined,
-              size: 64, color: Colors.white.withOpacity(0.2)),
+              size: 64, color: Colors.white.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
           Text(
             _state.searchQuery.isNotEmpty
                 ? 'لا توجد نتائج للبحث'
                 : 'لا توجد صور في هذا المجلد',
-            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.4)),
+            style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.4)),
           ),
         ],
       ),

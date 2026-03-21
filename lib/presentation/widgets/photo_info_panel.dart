@@ -90,7 +90,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          left: BorderSide(color: Colors.white.withOpacity(0.06)),
+          left: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
         ),
       ),
       child: Column(
@@ -119,7 +119,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
             ),
           ),
 
-          Divider(color: Colors.white.withOpacity(0.06), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
 
           Expanded(
             child: ListView(
@@ -137,7 +137,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                         )
                       : Container(
                           height: 150,
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           child: const Icon(Icons.image,
                               color: Colors.white24, size: 48),
                         ),
@@ -182,7 +182,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                         'لا توجد بيانات EXIF',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                         ),
                       ),
                     ),
@@ -204,7 +204,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             letterSpacing: 0.5,
           ),
         ),

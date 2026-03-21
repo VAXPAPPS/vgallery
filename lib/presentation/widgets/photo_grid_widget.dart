@@ -82,16 +82,16 @@ class _PhotoTileState extends State<_PhotoTile>
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: widget.isSelected
-                  ? Colors.white.withOpacity(0.4)
+                  ? Colors.white.withValues(alpha: 0.4)
                   : _isHovered
-                      ? Colors.white.withOpacity(0.15)
-                      : Colors.white.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.15)
+                      : Colors.white.withValues(alpha: 0.05),
               width: widget.isSelected ? 2 : 1,
             ),
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -117,7 +117,7 @@ class _PhotoTileState extends State<_PhotoTile>
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.6),
+                          Colors.black.withValues(alpha: 0.6),
                         ],
                         stops: const [0.5, 1.0],
                       ),
@@ -155,7 +155,7 @@ class _PhotoTileState extends State<_PhotoTile>
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -180,7 +180,7 @@ class _PhotoTileState extends State<_PhotoTile>
                       widget.photo.formattedSize,
                       style: TextStyle(
                         fontSize: 9,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         shadows: const [
                           Shadow(blurRadius: 4, color: Colors.black),
                         ],
@@ -206,12 +206,12 @@ class _PhotoTileState extends State<_PhotoTile>
 
     // Placeholder أثناء التحميل
     return Container(
-      color: Colors.white.withOpacity(0.03),
+      color: Colors.white.withValues(alpha: 0.03),
       child: Center(
         child: Icon(
           Icons.image_outlined,
           size: 32,
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
         ),
       ),
     );

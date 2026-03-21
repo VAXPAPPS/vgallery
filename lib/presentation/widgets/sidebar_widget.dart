@@ -19,7 +19,7 @@ class SidebarWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          right: BorderSide(color: Colors.white.withOpacity(0.06)),
+          right: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
         ),
       ),
       child: Column(
@@ -27,7 +27,7 @@ class SidebarWidget extends StatelessWidget {
           // الوصول السريع
           _buildQuickAccess(),
 
-          Divider(color: Colors.white.withOpacity(0.06), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
 
           // شجرة المجلدات
           Expanded(
@@ -49,7 +49,7 @@ class SidebarWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               letterSpacing: 1,
             ),
           ),
@@ -79,7 +79,7 @@ class SidebarWidget extends StatelessWidget {
       return Center(
         child: Text(
           'لا توجد مجلدات فرعية',
-          style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 12),
         ),
       );
     }
@@ -149,9 +149,9 @@ class _QuickAccessItemState extends State<_QuickAccessItem> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             color: widget.isActive
-                ? Colors.white.withOpacity(0.1)
+                ? Colors.white.withValues(alpha: 0.1)
                 : _isHovered
-                    ? Colors.white.withOpacity(0.05)
+                    ? Colors.white.withValues(alpha: 0.05)
                     : Colors.transparent,
           ),
           child: Row(
@@ -250,7 +250,7 @@ class _FolderTreeItemState extends State<_FolderTreeItem> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
                 color: _isHovered
-                    ? Colors.white.withOpacity(0.05)
+                    ? Colors.white.withValues(alpha: 0.05)
                     : Colors.transparent,
               ),
               child: Row(
@@ -275,7 +275,7 @@ class _FolderTreeItemState extends State<_FolderTreeItem> {
                         ? Icons.folder_open
                         : Icons.folder,
                     size: 16,
-                    color: Colors.amber.withOpacity(0.6),
+                    color: Colors.amber.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -293,7 +293,7 @@ class _FolderTreeItemState extends State<_FolderTreeItem> {
                       '${widget.folder.imageCount}',
                       style: TextStyle(
                         fontSize: 10,
-                        color: Colors.white.withOpacity(0.25),
+                        color: Colors.white.withValues(alpha: 0.25),
                       ),
                     ),
                 ],

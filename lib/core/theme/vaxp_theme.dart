@@ -11,7 +11,6 @@ class VaxpTheme {
     colorScheme: ColorScheme.dark(
       primary: VaxpColors.primary,
       secondary: VaxpColors.secondary,
-      background: VaxpColors.darkGlassBackground,
       surface: VaxpColors.glassSurface,
     ),
     scaffoldBackgroundColor: VaxpColors.darkGlassBackground,
@@ -43,7 +42,7 @@ class VaxpTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
-        backgroundColor: VaxpColors.primary.withOpacity(0.8),
+        backgroundColor: VaxpColors.primary.withValues(alpha: 0.8),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -54,7 +53,7 @@ class VaxpTheme {
     // ⚪ OutlinedButton
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        side: BorderSide(color: VaxpColors.primary.withOpacity(0.5)),
+        side: BorderSide(color: VaxpColors.primary.withValues(alpha: 0.5)),
         foregroundColor: VaxpColors.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: const TextStyle(fontWeight: FontWeight.w500),
@@ -66,7 +65,7 @@ class VaxpTheme {
       backgroundColor: const Color.fromARGB(0, 0, 0, 0),
       elevation: 0,
       height: 72,
-      indicatorColor: VaxpColors.primary.withOpacity(0.25),
+      indicatorColor: VaxpColors.primary.withValues(alpha: 0.25),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.all(
         const IconThemeData(), // Inherit color
@@ -95,7 +94,7 @@ class VaxpTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.2), width: 1),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2), width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -135,13 +134,13 @@ class VaxpTheme {
       checkColor: WidgetStateProperty.all(Colors.white),
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.all(VaxpColors.primary.withOpacity(0.9)),
-      trackColor: WidgetStateProperty.all(VaxpColors.primary.withOpacity(0.4)),
+      thumbColor: WidgetStateProperty.all(VaxpColors.primary.withValues(alpha: 0.9)),
+      trackColor: WidgetStateProperty.all(VaxpColors.primary.withValues(alpha: 0.4)),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: VaxpColors.primary,
       thumbColor: VaxpColors.primary,
-      inactiveTrackColor: VaxpColors.primary.withOpacity(0.2),
+      inactiveTrackColor: VaxpColors.primary.withValues(alpha: 0.2),
     ),
 
     // 🧭 BottomSheet
@@ -177,9 +176,9 @@ class VaxpGlass extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(opacity * 0.8),
+            color: Colors.white.withValues(alpha: opacity * 0.8),
             borderRadius: radius ?? BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
           ),
           child: child,
         ),
