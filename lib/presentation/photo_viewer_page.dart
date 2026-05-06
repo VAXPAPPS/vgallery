@@ -25,6 +25,7 @@ class PhotoViewerPage extends StatefulWidget {
 
 class _PhotoViewerPageState extends State<PhotoViewerPage> {
   final PhotoViewerState _state = PhotoViewerState();
+  final FocusNode _focusNode = FocusNode();
   bool _showControls = true;
   bool _showThumbnailStrip = true;
   final ScrollController _thumbScrollController = ScrollController();
@@ -34,6 +35,9 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
     super.initState();
     _state.addListener(_onStateChanged);
     _state.initialize(widget.photos, widget.initialIndex);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
   }
 
   void _onStateChanged() {
@@ -57,17 +61,21 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
   void dispose() {
     _state.removeListener(_onStateChanged);
     _state.dispose();
+    _focusNode.dispose();
     _thumbScrollController.dispose();
     super.dispose();
+  }
+
+  void _closeViewer() {
+    _state.stopSlideshow();
+    Navigator.of(context).pop();
   }
 
   void _openEditor() {
     if (_state.currentPhoto == null) return;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => PhotoEditorPage(
-          photoPath: _state.currentPhoto!.path,
-        ),
+        builder: (_) => PhotoEditorPage(photoPath: _state.currentPhoto!.path),
       ),
     );
   }
@@ -77,50 +85,56 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
     final photo = _state.currentPhoto;
     if (photo == null) return const SizedBox.shrink();
 
-    return KeyboardListener(
-      focusNode: FocusNode()..requestFocus(),
-      onKeyEvent: _handleKeyEvent,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            // الصورة الرئيسية
-            GestureDetector(
-              onTap: () => setState(() => _showControls = !_showControls),
-              child: PhotoView(
-                key: ValueKey(photo.path),
-                imageProvider: FileImage(File(photo.path)),
-                minScale: PhotoViewComputedScale.contained,
-                maxScale: PhotoViewComputedScale.covered * 4,
-                backgroundDecoration: const BoxDecoration(color: Colors.black),
-                loadingBuilder: (_, event) => Center(
-                  child: CircularProgressIndicator(
-                    value: event?.expectedTotalBytes != null
-                        ? event!.cumulativeBytesLoaded /
-                            event.expectedTotalBytes!
-                        : null,
-                    color: Colors.white24,
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) _state.stopSlideshow();
+      },
+      child: KeyboardListener(
+        focusNode: _focusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              // الصورة الرئيسية
+              GestureDetector(
+                onTap: () => setState(() => _showControls = !_showControls),
+                child: PhotoView(
+                  key: ValueKey(photo.path),
+                  imageProvider: FileImage(File(photo.path)),
+                  minScale: PhotoViewComputedScale.contained,
+                  maxScale: PhotoViewComputedScale.covered * 4,
+                  backgroundDecoration: const BoxDecoration(
+                    color: Colors.black,
+                  ),
+                  loadingBuilder: (_, event) => Center(
+                    child: CircularProgressIndicator(
+                      value: event?.expectedTotalBytes != null
+                          ? event!.cumulativeBytesLoaded /
+                                event.expectedTotalBytes!
+                          : null,
+                      color: Colors.white24,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            // عناصر التحكم
-            if (_showControls) ...[
-              // شريط علوي
-              _buildTopBar(photo),
+              // عناصر التحكم
+              if (_showControls) ...[
+                // شريط علوي
+                _buildTopBar(photo),
 
-              // أزرار التنقل
-              _buildNavigationButtons(),
+                // أزرار التنقل
+                _buildNavigationButtons(),
 
-              // شريط Thumbnails السفلي
-              if (_showThumbnailStrip)
-                _buildThumbnailStrip(),
+                // شريط Thumbnails السفلي
+                if (_showThumbnailStrip) _buildThumbnailStrip(),
 
-              // معلومات الصورة
-              _buildBottomInfo(photo),
+                // معلومات الصورة
+                _buildBottomInfo(photo),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -137,10 +151,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withValues(alpha: 0.7),
-              Colors.transparent,
-            ],
+            colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
           ),
         ),
         child: SafeArea(
@@ -149,7 +160,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
               // رجوع
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: _closeViewer,
               ),
               const SizedBox(width: 8),
               // اسم الملف
@@ -216,31 +227,28 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // السابق
-          if (_state.hasPrevious)
-            GestureDetector(
-              onTap: () => _state.previous(),
-              child: Container(
-                width: 60,
-                color: Colors.transparent,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.chevron_left,
-                      color: Colors.white,
-                      size: 28,
-                    ),
+          // رجوع من العارض
+          GestureDetector(
+            onTap: _closeViewer,
+            child: Container(
+              width: 60,
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 24,
                   ),
                 ),
               ),
-            )
-          else
-            const SizedBox(width: 60),
+            ),
+          ),
 
           const Spacer(),
 
@@ -315,8 +323,11 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                         )
                       : Container(
                           color: Colors.white.withValues(alpha: 0.05),
-                          child: const Icon(Icons.image, size: 16,
-                              color: Colors.white24),
+                          child: const Icon(
+                            Icons.image,
+                            size: 16,
+                            color: Colors.white24,
+                          ),
                         ),
                 ),
               ),
@@ -353,10 +364,11 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
         _state.next();
         break;
       case LogicalKeyboardKey.arrowLeft:
-        _state.previous();
-        break;
       case LogicalKeyboardKey.escape:
-        Navigator.of(context).pop();
+      case LogicalKeyboardKey.goBack:
+      case LogicalKeyboardKey.browserBack:
+      case LogicalKeyboardKey.backspace:
+        _closeViewer();
         break;
       case LogicalKeyboardKey.space:
         _state.toggleSlideshow();

@@ -5,6 +5,14 @@ import 'package:image/image.dart' as img;
 
 /// معالجة الصور في Isolate منفصل للحفاظ على سلاسة الـ UI
 
+img.Image _decodeEditableImage(Uint8List imageBytes) {
+  final image = img.decodeImage(imageBytes);
+  if (image == null) {
+    throw const FormatException('Unsupported image format');
+  }
+  return image.convert(numChannels: 4);
+}
+
 /// توليد Thumbnail في Isolate
 Future<Uint8List?> generateThumbnailIsolate(Map<String, dynamic> params) async {
   return await Isolate.run(() {
@@ -54,8 +62,7 @@ Future<Uint8List?> resizeImageIsolate(Map<String, dynamic> params) async {
     final bool maintainAspect = params['maintainAspect'] ?? true;
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
       img.Image resized;
       if (maintainAspect) {
@@ -91,8 +98,7 @@ Future<Uint8List?> cropImageIsolate(Map<String, dynamic> params) async {
     final int h = params['height'];
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
       final cropped = img.copyCrop(image, x: x, y: y, width: w, height: h);
       return Uint8List.fromList(img.encodePng(cropped));
@@ -109,8 +115,7 @@ Future<Uint8List?> rotateImageIsolate(Map<String, dynamic> params) async {
     final double angle = (params['angle'] as num).toDouble();
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
       final rotated = img.copyRotate(image, angle: angle);
       return Uint8List.fromList(img.encodePng(rotated));
@@ -127,8 +132,7 @@ Future<Uint8List?> flipImageIsolate(Map<String, dynamic> params) async {
     final bool horizontal = params['horizontal'] ?? true;
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
       final flipped = img.flip(
         image,
@@ -144,18 +148,18 @@ Future<Uint8List?> flipImageIsolate(Map<String, dynamic> params) async {
 }
 
 /// تعديل السطوع في Isolate
-Future<Uint8List?> adjustBrightnessIsolate(
-    Map<String, dynamic> params) async {
+Future<Uint8List?> adjustBrightnessIsolate(Map<String, dynamic> params) async {
   return await Isolate.run(() {
     final Uint8List imageBytes = params['imageBytes'];
     final int value = params['value'];
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
-      final adjusted =
-          img.adjustColor(image, brightness: value / 255.0);
+      final adjusted = img.adjustColor(
+        image,
+        brightness: (1.0 + (value / 100.0)).clamp(0.0, 2.0),
+      );
       return Uint8List.fromList(img.encodePng(adjusted));
     } catch (e) {
       return null;
@@ -170,10 +174,12 @@ Future<Uint8List?> adjustContrastIsolate(Map<String, dynamic> params) async {
     final int value = params['value'];
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
-      final adjusted = img.contrast(image, contrast: 100 + value);
+      final adjusted = img.adjustColor(
+        image,
+        contrast: (1.0 + (value / 100.0)).clamp(0.0, 2.0),
+      );
       return Uint8List.fromList(img.encodePng(adjusted));
     } catch (e) {
       return null;
@@ -182,15 +188,13 @@ Future<Uint8List?> adjustContrastIsolate(Map<String, dynamic> params) async {
 }
 
 /// تعديل التشبع في Isolate
-Future<Uint8List?> adjustSaturationIsolate(
-    Map<String, dynamic> params) async {
+Future<Uint8List?> adjustSaturationIsolate(Map<String, dynamic> params) async {
   return await Isolate.run(() {
     final Uint8List imageBytes = params['imageBytes'];
     final int value = params['value'];
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
       final adjusted = img.adjustColor(
         image,
@@ -210,8 +214,7 @@ Future<Uint8List?> applyFilterIsolate(Map<String, dynamic> params) async {
     final String filterName = params['filter'];
 
     try {
-      final image = img.decodeImage(imageBytes);
-      if (image == null) return null;
+      final image = _decodeEditableImage(imageBytes);
 
       img.Image result;
       switch (filterName) {
@@ -223,7 +226,7 @@ Future<Uint8List?> applyFilterIsolate(Map<String, dynamic> params) async {
           break;
         case 'vintage':
           result = img.sepia(image, amount: 60);
-          result = img.adjustColor(result, brightness: -0.05, saturation: 0.8);
+          result = img.adjustColor(result, brightness: 0.95, saturation: 0.8);
           break;
         case 'cool':
           result = img.adjustColor(image, saturation: 0.8);
@@ -237,7 +240,7 @@ Future<Uint8List?> applyFilterIsolate(Map<String, dynamic> params) async {
           result = img.adjustColor(result, saturation: 1.3);
           break;
         case 'fade':
-          result = img.adjustColor(image, brightness: 0.1, saturation: 0.7);
+          result = img.adjustColor(image, brightness: 1.1, saturation: 0.7);
           result = img.contrast(result, contrast: 90);
           break;
         default:

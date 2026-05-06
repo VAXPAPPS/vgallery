@@ -18,6 +18,7 @@ class GalleryPage extends StatefulWidget {
 
 class _GalleryPageState extends State<GalleryPage> {
   final GalleryState _state = GalleryState();
+  final FocusNode _focusNode = FocusNode();
   bool _sidebarCollapsed = false;
 
   @override
@@ -25,6 +26,9 @@ class _GalleryPageState extends State<GalleryPage> {
     super.initState();
     _state.addListener(_onStateChanged);
     _state.init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
   }
 
   void _onStateChanged() {
@@ -35,6 +39,7 @@ class _GalleryPageState extends State<GalleryPage> {
   void dispose() {
     _state.removeListener(_onStateChanged);
     _state.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -57,7 +62,7 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     return KeyboardListener(
-      focusNode: FocusNode()..requestFocus(),
+      focusNode: _focusNode,
       onKeyEvent: _handleKeyEvent,
       child: VenomScaffold(
         title: 'VAXP Gallery',
@@ -91,17 +96,16 @@ class _GalleryPageState extends State<GalleryPage> {
                             ),
                           )
                         : _state.photos.isEmpty
-                            ? _buildEmptyState()
-                            : PhotoGridWidget(
-                                photos: _state.photos,
-                                gridColumns: _state.gridColumns,
-                                onPhotoTap: _openViewer,
-                                onPhotoSelect: (photo) =>
-                                    _state.selectPhoto(photo),
-                                selectedPhoto: _state.selectedPhoto,
-                                onFavoriteToggle: (photo) =>
-                                    _state.toggleFavorite(photo),
-                              ),
+                        ? _buildEmptyState()
+                        : PhotoGridWidget(
+                            photos: _state.photos,
+                            gridColumns: _state.gridColumns,
+                            onPhotoTap: _openViewer,
+                            onPhotoSelect: (photo) => _state.selectPhoto(photo),
+                            selectedPhoto: _state.selectedPhoto,
+                            onFavoriteToggle: (photo) =>
+                                _state.toggleFavorite(photo),
+                          ),
                   ),
                 ],
               ),
@@ -132,9 +136,7 @@ class _GalleryPageState extends State<GalleryPage> {
         children: [
           // زر الشريط الجانبي
           _toolbarButton(
-            icon: _sidebarCollapsed
-                ? Icons.menu_open
-                : Icons.menu,
+            icon: _sidebarCollapsed ? Icons.menu_open : Icons.menu,
             tooltip: 'الشريط الجانبي',
             onTap: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
           ),
@@ -158,19 +160,29 @@ class _GalleryPageState extends State<GalleryPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
                   children: [
-                    const Icon(Icons.folder_open, size: 16, color: Colors.white54),
+                    const Icon(
+                      Icons.folder_open,
+                      size: 16,
+                      color: Colors.white54,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _state.currentPath,
-                        style: const TextStyle(fontSize: 12, color: Colors.white70),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white70,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     // عدد الصور
                     Text(
                       '${_state.photos.length} صورة',
-                      style: const TextStyle(fontSize: 11, color: Colors.white38),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.white38,
+                      ),
                     ),
                   ],
                 ),
@@ -191,7 +203,11 @@ class _GalleryPageState extends State<GalleryPage> {
                 decoration: const InputDecoration(
                   hintText: 'بحث...',
                   hintStyle: TextStyle(fontSize: 12, color: Colors.white30),
-                  prefixIcon: Icon(Icons.search, size: 18, color: Colors.white38),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 18,
+                    color: Colors.white38,
+                  ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 14),
                   isDense: true,
@@ -264,20 +280,20 @@ class _GalleryPageState extends State<GalleryPage> {
           height: 36,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            color: isActive ? Colors.white.withValues(alpha: 0.1) : Colors.transparent,
+            color: isActive
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.transparent,
           ),
-          child: Icon(
-            icon,
-            size: 18,
-            color: color ?? Colors.white54,
-          ),
+          child: Icon(icon, size: 18, color: color ?? Colors.white54),
         ),
       ),
     );
   }
 
   PopupMenuItem<SortType> _sortMenuItem(
-    SortType type, String label, IconData icon,
+    SortType type,
+    String label,
+    IconData icon,
   ) {
     final isActive = _state.sortType == type;
     return PopupMenuItem(
@@ -286,11 +302,13 @@ class _GalleryPageState extends State<GalleryPage> {
         children: [
           Icon(icon, size: 16, color: isActive ? Colors.white : Colors.white54),
           const SizedBox(width: 8),
-          Text(label,
-              style: TextStyle(
-                color: isActive ? Colors.white : Colors.white70,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              )),
+          Text(
+            label,
+            style: TextStyle(
+              color: isActive ? Colors.white : Colors.white70,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
           if (isActive) ...[
             const Spacer(),
             Icon(
@@ -311,14 +329,20 @@ class _GalleryPageState extends State<GalleryPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.photo_library_outlined,
-              size: 64, color: Colors.white.withValues(alpha: 0.2)),
+          Icon(
+            Icons.photo_library_outlined,
+            size: 64,
+            color: Colors.white.withValues(alpha: 0.2),
+          ),
           const SizedBox(height: 16),
           Text(
             _state.searchQuery.isNotEmpty
                 ? 'لا توجد نتائج للبحث'
                 : 'لا توجد صور في هذا المجلد',
-            style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.4)),
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white.withValues(alpha: 0.4),
+            ),
           ),
         ],
       ),
@@ -327,6 +351,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
   void _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return;
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     // اختصارات لوحة المفاتيح
     if (event.logicalKey == LogicalKeyboardKey.backspace) {
       _state.navigateUp();
