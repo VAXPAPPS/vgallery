@@ -36,7 +36,9 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
     _state.addListener(_onStateChanged);
     _state.initialize(widget.photos, widget.initialIndex);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _focusNode.requestFocus();
+      if (!mounted) return;
+      _focusNode.requestFocus();
+      _precacheCurrentPhoto();
     });
   }
 
@@ -44,6 +46,13 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
     if (mounted) setState(() {});
     // تمرير شريط الـ thumbnails
     _scrollToCurrentThumb();
+    _precacheCurrentPhoto();
+  }
+
+  void _precacheCurrentPhoto() {
+    final photo = _state.currentPhoto;
+    if (photo == null) return;
+    precacheImage(FileImage(File(photo.path)), context);
   }
 
   void _scrollToCurrentThumb() {
@@ -104,6 +113,8 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   imageProvider: FileImage(File(photo.path)),
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 4,
+                  filterQuality: FilterQuality.high,
+                  gaplessPlayback: true,
                   backgroundDecoration: const BoxDecoration(
                     color: Colors.black,
                   ),
