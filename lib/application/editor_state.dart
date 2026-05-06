@@ -42,6 +42,7 @@ class EditorState extends ChangeNotifier {
   // الفلتر الحالي
   ImageFilter _currentFilter = ImageFilter.none;
   ImageFilter get currentFilter => _currentFilter;
+  Uint8List? _filterBaseBytes;
 
   // وضع القص
   bool _isCropping = false;
@@ -61,7 +62,9 @@ class EditorState extends ChangeNotifier {
 
     _filePath = path;
     _originalBytes = await _editorService.loadImage(path);
-    _currentBytes = _originalBytes != null ? Uint8List.fromList(_originalBytes!) : null;
+    _currentBytes = _originalBytes != null
+        ? Uint8List.fromList(_originalBytes!)
+        : null;
     _undoStack.clear();
     _redoStack.clear();
     _operations.clear();
@@ -69,6 +72,7 @@ class EditorState extends ChangeNotifier {
     _contrast = 0;
     _saturation = 0;
     _currentFilter = ImageFilter.none;
+    _filterBaseBytes = null;
     _isCropping = false;
     _cropRect = null;
 
@@ -93,6 +97,10 @@ class EditorState extends ChangeNotifier {
       _redoStack.clear(); // مسح redo عند عملية جديدة
       _operations.add(operation);
       _currentBytes = result;
+      if (operation.type != EditType.filter) {
+        _currentFilter = ImageFilter.none;
+        _filterBaseBytes = null;
+      }
     }
 
     _isProcessing = false;
@@ -100,7 +108,11 @@ class EditorState extends ChangeNotifier {
   }
 
   /// تغيير الحجم
-  Future<void> resize({int? width, int? height, bool maintainAspect = true}) async {
+  Future<void> resize({
+    int? width,
+    int? height,
+    bool maintainAspect = true,
+  }) async {
     await _applyOperation(
       EditOperation(
         type: EditType.resize,
@@ -163,8 +175,12 @@ class EditorState extends ChangeNotifier {
   Future<void> applyBrightness() async {
     if (_brightness == 0) return;
     await _applyOperation(
-      EditOperation(type: EditType.brightness, params: {'value': _brightness.toInt()}),
-      () => _editorService.adjustBrightness(_currentBytes!, _brightness.toInt()),
+      EditOperation(
+        type: EditType.brightness,
+        params: {'value': _brightness.toInt()},
+      ),
+      () =>
+          _editorService.adjustBrightness(_currentBytes!, _brightness.toInt()),
     );
     _brightness = 0;
   }
@@ -179,7 +195,10 @@ class EditorState extends ChangeNotifier {
   Future<void> applyContrast() async {
     if (_contrast == 0) return;
     await _applyOperation(
-      EditOperation(type: EditType.contrast, params: {'value': _contrast.toInt()}),
+      EditOperation(
+        type: EditType.contrast,
+        params: {'value': _contrast.toInt()},
+      ),
       () => _editorService.adjustContrast(_currentBytes!, _contrast.toInt()),
     );
     _contrast = 0;
@@ -195,20 +214,45 @@ class EditorState extends ChangeNotifier {
   Future<void> applySaturation() async {
     if (_saturation == 0) return;
     await _applyOperation(
-      EditOperation(type: EditType.saturation, params: {'value': _saturation.toInt()}),
-      () => _editorService.adjustSaturation(_currentBytes!, _saturation.toInt()),
+      EditOperation(
+        type: EditType.saturation,
+        params: {'value': _saturation.toInt()},
+      ),
+      () =>
+          _editorService.adjustSaturation(_currentBytes!, _saturation.toInt()),
     );
     _saturation = 0;
   }
 
   /// تطبيق فلتر
   Future<void> applyFilter(ImageFilter filter) async {
-    if (filter == ImageFilter.none) return;
-    await _applyOperation(
-      EditOperation(type: EditType.filter, params: {'filter': filter.name}),
-      () => _editorService.applyFilter(_currentBytes!, filter),
-    );
-    _currentFilter = filter;
+    if (_currentBytes == null || filter == _currentFilter) return;
+
+    _isProcessing = true;
+    notifyListeners();
+
+    Uint8List? result;
+    final baseBytes = _filterBaseBytes ?? Uint8List.fromList(_currentBytes!);
+
+    if (filter == ImageFilter.none) {
+      result = Uint8List.fromList(baseBytes);
+    } else {
+      result = await _editorService.applyFilter(baseBytes, filter);
+    }
+
+    if (result != null) {
+      _undoStack.add(_currentBytes!);
+      _redoStack.clear();
+      _operations.add(
+        EditOperation(type: EditType.filter, params: {'filter': filter.name}),
+      );
+      _currentBytes = result;
+      _currentFilter = filter;
+      _filterBaseBytes = filter == ImageFilter.none ? null : baseBytes;
+    }
+
+    _isProcessing = false;
+    notifyListeners();
   }
 
   /// تبديل وضع القص
@@ -238,6 +282,8 @@ class EditorState extends ChangeNotifier {
     _redoStack.add(_currentBytes!);
     _currentBytes = _undoStack.removeLast();
     if (_operations.isNotEmpty) _operations.removeLast();
+    _currentFilter = ImageFilter.none;
+    _filterBaseBytes = null;
     notifyListeners();
   }
 
@@ -246,6 +292,8 @@ class EditorState extends ChangeNotifier {
     if (!canRedo) return;
     _undoStack.add(_currentBytes!);
     _currentBytes = _redoStack.removeLast();
+    _currentFilter = ImageFilter.none;
+    _filterBaseBytes = null;
     notifyListeners();
   }
 
@@ -260,6 +308,7 @@ class EditorState extends ChangeNotifier {
     _contrast = 0;
     _saturation = 0;
     _currentFilter = ImageFilter.none;
+    _filterBaseBytes = null;
     _isCropping = false;
     _cropRect = null;
     notifyListeners();
