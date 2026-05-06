@@ -38,6 +38,7 @@ class EditorState extends ChangeNotifier {
   double get contrast => _contrast;
   double _saturation = 0;
   double get saturation => _saturation;
+  Uint8List? _adjustmentBaseBytes;
 
   // الفلتر الحالي
   ImageFilter _currentFilter = ImageFilter.none;
@@ -71,6 +72,7 @@ class EditorState extends ChangeNotifier {
     _brightness = 0;
     _contrast = 0;
     _saturation = 0;
+    _adjustmentBaseBytes = null;
     _currentFilter = ImageFilter.none;
     _filterBaseBytes = null;
     _isCropping = false;
@@ -100,6 +102,9 @@ class EditorState extends ChangeNotifier {
       if (operation.type != EditType.filter) {
         _currentFilter = ImageFilter.none;
         _filterBaseBytes = null;
+      }
+      if (!_isAdjustmentOperation(operation.type)) {
+        _resetAdjustmentState();
       }
     }
 
@@ -173,16 +178,7 @@ class EditorState extends ChangeNotifier {
 
   /// تطبيق السطوع
   Future<void> applyBrightness() async {
-    if (_brightness == 0) return;
-    await _applyOperation(
-      EditOperation(
-        type: EditType.brightness,
-        params: {'value': _brightness.toInt()},
-      ),
-      () =>
-          _editorService.adjustBrightness(_currentBytes!, _brightness.toInt()),
-    );
-    _brightness = 0;
+    await _applyAdjustments(EditType.brightness);
   }
 
   /// تعديل التباين
@@ -193,15 +189,7 @@ class EditorState extends ChangeNotifier {
 
   /// تطبيق التباين
   Future<void> applyContrast() async {
-    if (_contrast == 0) return;
-    await _applyOperation(
-      EditOperation(
-        type: EditType.contrast,
-        params: {'value': _contrast.toInt()},
-      ),
-      () => _editorService.adjustContrast(_currentBytes!, _contrast.toInt()),
-    );
-    _contrast = 0;
+    await _applyAdjustments(EditType.contrast);
   }
 
   /// تعديل التشبع
@@ -212,16 +200,93 @@ class EditorState extends ChangeNotifier {
 
   /// تطبيق التشبع
   Future<void> applySaturation() async {
-    if (_saturation == 0) return;
-    await _applyOperation(
-      EditOperation(
-        type: EditType.saturation,
-        params: {'value': _saturation.toInt()},
-      ),
-      () =>
-          _editorService.adjustSaturation(_currentBytes!, _saturation.toInt()),
-    );
+    await _applyAdjustments(EditType.saturation);
+  }
+
+  bool _isAdjustmentOperation(EditType type) {
+    return type == EditType.brightness ||
+        type == EditType.contrast ||
+        type == EditType.saturation;
+  }
+
+  bool get _hasAdjustmentValues {
+    return _brightness != 0 || _contrast != 0 || _saturation != 0;
+  }
+
+  void _resetAdjustmentState() {
+    _brightness = 0;
+    _contrast = 0;
     _saturation = 0;
+    _adjustmentBaseBytes = null;
+  }
+
+  Future<Uint8List?> _buildAdjustedImage(Uint8List baseBytes) async {
+    Uint8List result = Uint8List.fromList(baseBytes);
+
+    if (_brightness != 0) {
+      final adjusted = await _editorService.adjustBrightness(
+        result,
+        _brightness.toInt(),
+      );
+      if (adjusted == null) return null;
+      result = adjusted;
+    }
+
+    if (_contrast != 0) {
+      final adjusted = await _editorService.adjustContrast(
+        result,
+        _contrast.toInt(),
+      );
+      if (adjusted == null) return null;
+      result = adjusted;
+    }
+
+    if (_saturation != 0) {
+      final adjusted = await _editorService.adjustSaturation(
+        result,
+        _saturation.toInt(),
+      );
+      if (adjusted == null) return null;
+      result = adjusted;
+    }
+
+    return result;
+  }
+
+  Future<void> _applyAdjustments(EditType type) async {
+    if (_currentBytes == null) return;
+    if (!_hasAdjustmentValues && _adjustmentBaseBytes == null) return;
+
+    _isProcessing = true;
+    notifyListeners();
+
+    final baseBytes =
+        _adjustmentBaseBytes ?? Uint8List.fromList(_currentBytes!);
+    final result = _hasAdjustmentValues
+        ? await _buildAdjustedImage(baseBytes)
+        : Uint8List.fromList(baseBytes);
+
+    if (result != null) {
+      _undoStack.add(_currentBytes!);
+      _redoStack.clear();
+      _operations.add(
+        EditOperation(
+          type: type,
+          params: {
+            'brightness': _brightness.toInt(),
+            'contrast': _contrast.toInt(),
+            'saturation': _saturation.toInt(),
+          },
+        ),
+      );
+      _currentBytes = result;
+      _adjustmentBaseBytes = _hasAdjustmentValues ? baseBytes : null;
+      _currentFilter = ImageFilter.none;
+      _filterBaseBytes = null;
+    }
+
+    _isProcessing = false;
+    notifyListeners();
   }
 
   /// تطبيق فلتر
@@ -249,6 +314,7 @@ class EditorState extends ChangeNotifier {
       _currentBytes = result;
       _currentFilter = filter;
       _filterBaseBytes = filter == ImageFilter.none ? null : baseBytes;
+      _resetAdjustmentState();
     }
 
     _isProcessing = false;
@@ -284,6 +350,7 @@ class EditorState extends ChangeNotifier {
     if (_operations.isNotEmpty) _operations.removeLast();
     _currentFilter = ImageFilter.none;
     _filterBaseBytes = null;
+    _resetAdjustmentState();
     notifyListeners();
   }
 
@@ -294,6 +361,7 @@ class EditorState extends ChangeNotifier {
     _currentBytes = _redoStack.removeLast();
     _currentFilter = ImageFilter.none;
     _filterBaseBytes = null;
+    _resetAdjustmentState();
     notifyListeners();
   }
 
@@ -304,9 +372,7 @@ class EditorState extends ChangeNotifier {
     _redoStack.clear();
     _operations.clear();
     _currentBytes = Uint8List.fromList(_originalBytes!);
-    _brightness = 0;
-    _contrast = 0;
-    _saturation = 0;
+    _resetAdjustmentState();
     _currentFilter = ImageFilter.none;
     _filterBaseBytes = null;
     _isCropping = false;
