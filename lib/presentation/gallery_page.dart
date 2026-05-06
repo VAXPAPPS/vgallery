@@ -137,7 +137,7 @@ class _GalleryPageState extends State<GalleryPage> {
           // زر الشريط الجانبي
           _toolbarButton(
             icon: _sidebarCollapsed ? Icons.menu_open : Icons.menu,
-            tooltip: 'الشريط الجانبي',
+            tooltip: 'Sidebar',
             onTap: () => setState(() => _sidebarCollapsed = !_sidebarCollapsed),
           ),
           const SizedBox(width: 4),
@@ -145,7 +145,7 @@ class _GalleryPageState extends State<GalleryPage> {
           // زر الرجوع
           _toolbarButton(
             icon: Icons.arrow_upward,
-            tooltip: 'المجلد الأب',
+            tooltip: 'Parent Folder',
             onTap: () => _state.navigateUp(),
           ),
           const SizedBox(width: 8),
@@ -178,7 +178,7 @@ class _GalleryPageState extends State<GalleryPage> {
                     ),
                     // عدد الصور
                     Text(
-                      '${_state.photos.length} صورة',
+                      '${_state.photos.length} photos',
                       style: const TextStyle(
                         fontSize: 11,
                         color: Colors.white38,
@@ -201,7 +201,7 @@ class _GalleryPageState extends State<GalleryPage> {
               child: TextField(
                 style: const TextStyle(fontSize: 13, color: Colors.white),
                 decoration: const InputDecoration(
-                  hintText: 'بحث...',
+                  hintText: 'Search...',
                   hintStyle: TextStyle(fontSize: 12, color: Colors.white30),
                   prefixIcon: Icon(
                     Icons.search,
@@ -220,21 +220,21 @@ class _GalleryPageState extends State<GalleryPage> {
 
           // الترتيب
           PopupMenuButton<SortType>(
-            tooltip: 'ترتيب',
+            tooltip: 'Sort',
             icon: const Icon(Icons.sort, size: 20, color: Colors.white54),
             color: const Color.fromARGB(230, 30, 30, 30),
             onSelected: (type) => _state.setSortType(type),
             itemBuilder: (_) => [
-              _sortMenuItem(SortType.name, 'الاسم', Icons.sort_by_alpha),
-              _sortMenuItem(SortType.date, 'التاريخ', Icons.calendar_today),
-              _sortMenuItem(SortType.size, 'الحجم', Icons.data_usage),
+              _sortMenuItem(SortType.name, 'Name', Icons.sort_by_alpha),
+              _sortMenuItem(SortType.date, 'Date', Icons.calendar_today),
+              _sortMenuItem(SortType.size, 'Size', Icons.data_usage),
             ],
           ),
 
           // حجم الشبكة
           _toolbarButton(
             icon: Icons.grid_view,
-            tooltip: 'حجم الشبكة',
+            tooltip: 'Grid Size',
             onTap: () {
               final next = _state.gridColumns == 8 ? 2 : _state.gridColumns + 1;
               _state.setGridColumns(next);
@@ -246,7 +246,7 @@ class _GalleryPageState extends State<GalleryPage> {
             icon: _state.showFavoritesOnly
                 ? Icons.favorite
                 : Icons.favorite_border,
-            tooltip: 'المفضلة فقط',
+            tooltip: 'Favorites Only',
             onTap: () => _state.toggleFavoritesOnly(),
             color: _state.showFavoritesOnly ? Colors.redAccent : null,
           ),
@@ -254,7 +254,7 @@ class _GalleryPageState extends State<GalleryPage> {
           // لوحة المعلومات
           _toolbarButton(
             icon: Icons.info_outline,
-            tooltip: 'معلومات الصورة',
+            tooltip: 'Photo Info',
             onTap: () => _state.toggleInfoPanel(),
             isActive: _state.showInfoPanel,
           ),
@@ -337,8 +337,8 @@ class _GalleryPageState extends State<GalleryPage> {
           const SizedBox(height: 16),
           Text(
             _state.searchQuery.isNotEmpty
-                ? 'لا توجد نتائج للبحث'
-                : 'لا توجد صور في هذا المجلد',
+                ? 'No search results'
+                : 'No photos in this folder',
             style: TextStyle(
               fontSize: 16,
               color: Colors.white.withValues(alpha: 0.4),

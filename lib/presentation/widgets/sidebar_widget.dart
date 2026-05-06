@@ -45,7 +45,7 @@ class SidebarWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Text(
-            'الوصول السريع',
+            'Quick Access',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -78,7 +78,7 @@ class SidebarWidget extends StatelessWidget {
     if (subfolders.isEmpty) {
       return Center(
         child: Text(
-          'لا توجد مجلدات فرعية',
+          'No subfolders',
           style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 12),
         ),
       );

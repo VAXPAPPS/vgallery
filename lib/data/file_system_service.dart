@@ -122,11 +122,11 @@ class FileSystemService {
   List<Map<String, String>> getQuickAccessFolders() {
     final home = Platform.environment['HOME'] ?? '/home';
     return [
-      {'name': 'الصور', 'path': '$home/Pictures', 'icon': 'photo_library'},
-      {'name': 'التنزيلات', 'path': '$home/Downloads', 'icon': 'download'},
-      {'name': 'المستندات', 'path': '$home/Documents', 'icon': 'folder'},
-      {'name': 'سطح المكتب', 'path': '$home/Desktop', 'icon': 'desktop_windows'},
-      {'name': 'الرئيسية', 'path': home, 'icon': 'home'},
+      {'name': 'Pictures', 'path': '$home/Pictures', 'icon': 'photo_library'},
+      {'name': 'Downloads', 'path': '$home/Downloads', 'icon': 'download'},
+      {'name': 'Documents', 'path': '$home/Documents', 'icon': 'folder'},
+      {'name': 'Desktop', 'path': '$home/Desktop', 'icon': 'desktop_windows'},
+      {'name': 'Home', 'path': home, 'icon': 'home'},
     ];
   }
 

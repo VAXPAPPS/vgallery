@@ -45,28 +45,28 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
 
       final exif = <String, dynamic>{};
       if (data.containsKey('Image Make')) {
-        exif['الشركة المصنعة'] = data['Image Make'].toString();
+        exif['Make'] = data['Image Make'].toString();
       }
       if (data.containsKey('Image Model')) {
-        exif['طراز الكاميرا'] = data['Image Model'].toString();
+        exif['Camera Model'] = data['Image Model'].toString();
       }
       if (data.containsKey('EXIF ISOSpeedRatings')) {
         exif['ISO'] = data['EXIF ISOSpeedRatings'].toString();
       }
       if (data.containsKey('EXIF FNumber')) {
-        exif['فتحة العدسة'] = 'f/${data['EXIF FNumber']}';
+        exif['Aperture'] = 'f/${data['EXIF FNumber']}';
       }
       if (data.containsKey('EXIF ExposureTime')) {
-        exif['سرعة الغالق'] = data['EXIF ExposureTime'].toString();
+        exif['Shutter Speed'] = data['EXIF ExposureTime'].toString();
       }
       if (data.containsKey('EXIF FocalLength')) {
-        exif['البعد البؤري'] = '${data['EXIF FocalLength']}mm';
+        exif['Focal Length'] = '${data['EXIF FocalLength']}mm';
       }
       if (data.containsKey('Image DateTime')) {
-        exif['تاريخ الالتقاط'] = data['Image DateTime'].toString();
+        exif['Date Taken'] = data['Image DateTime'].toString();
       }
       if (data.containsKey('EXIF ColorSpace')) {
-        exif['فضاء اللون'] = data['EXIF ColorSpace'].toString();
+        exif['Color Space'] = data['EXIF ColorSpace'].toString();
       }
 
       if (mounted) {
@@ -101,7 +101,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
             child: Row(
               children: [
                 const Text(
-                  'معلومات الصورة',
+                  'Photo Info',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -145,13 +145,13 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                 const SizedBox(height: 16),
 
                 // معلومات الملف
-                _buildSection('معلومات الملف', [
-                  _InfoRow('الاسم', '${widget.photo.name}${widget.photo.extension}'),
-                  _InfoRow('الحجم', widget.photo.formattedSize),
-                  _InfoRow('الأبعاد', widget.photo.dimensions),
-                  _InfoRow('النوع', widget.photo.extension.toUpperCase().replaceFirst('.', '')),
-                  _InfoRow('التعديل', _formatDate(widget.photo.modifiedDate)),
-                  _InfoRow('المسار', widget.photo.path),
+                _buildSection('File Info', [
+                  _InfoRow('Name', '${widget.photo.name}${widget.photo.extension}'),
+                  _InfoRow('Size', widget.photo.formattedSize),
+                  _InfoRow('Dimensions', widget.photo.dimensions),
+                  _InfoRow('Type', widget.photo.extension.toUpperCase().replaceFirst('.', '')),
+                  _InfoRow('Modified', _formatDate(widget.photo.modifiedDate)),
+                  _InfoRow('Path', widget.photo.path),
                 ]),
 
                 const SizedBox(height: 16),
@@ -169,7 +169,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                   )
                 else if (_exifData != null)
                   _buildSection(
-                    'بيانات الكاميرا (EXIF)',
+                    'Camera Data (EXIF)',
                     _exifData!.entries
                         .map((e) => _InfoRow(e.key, e.value.toString()))
                         .toList(),
@@ -179,7 +179,7 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'لا توجد بيانات EXIF',
+                        'No EXIF data',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.white.withValues(alpha: 0.3),

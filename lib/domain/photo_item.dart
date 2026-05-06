@@ -41,7 +41,7 @@ class PhotoItem {
     if (width != null && height != null) {
       return '${width}x$height';
     }
-    return 'غير معروف';
+    return 'Unknown';
   }
 }
 

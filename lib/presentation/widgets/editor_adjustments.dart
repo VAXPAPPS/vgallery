@@ -45,25 +45,25 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
         children: [
           _TabButton(
             icon: Icons.tune,
-            label: 'تعديل',
+            label: 'Adjust',
             isActive: _activeSection == 'adjust',
             onTap: () => setState(() => _activeSection = 'adjust'),
           ),
           _TabButton(
             icon: Icons.crop_rotate,
-            label: 'تحويل',
+            label: 'Transform',
             isActive: _activeSection == 'transform',
             onTap: () => setState(() => _activeSection = 'transform'),
           ),
           _TabButton(
             icon: Icons.filter_vintage,
-            label: 'فلاتر',
+            label: 'Filters',
             isActive: _activeSection == 'filters',
             onTap: () => setState(() => _activeSection = 'filters'),
           ),
           _TabButton(
             icon: Icons.photo_size_select_large,
-            label: 'حجم',
+            label: 'Size',
             isActive: _activeSection == 'resize',
             onTap: () => setState(() => _activeSection = 'resize'),
           ),
@@ -91,7 +91,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
   List<Widget> _buildAdjustSection() {
     return [
       _buildSlider(
-        label: 'السطوع',
+        label: 'Brightness',
         icon: Icons.brightness_6,
         value: widget.state.brightness,
         min: -100,
@@ -101,7 +101,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
       ),
       const SizedBox(height: 12),
       _buildSlider(
-        label: 'التباين',
+        label: 'Contrast',
         icon: Icons.contrast,
         value: widget.state.contrast,
         min: -100,
@@ -111,7 +111,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
       ),
       const SizedBox(height: 12),
       _buildSlider(
-        label: 'التشبع',
+        label: 'Saturation',
         icon: Icons.palette,
         value: widget.state.saturation,
         min: -100,
@@ -179,19 +179,19 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
   // ===== قسم التحويلات =====
   List<Widget> _buildTransformSection() {
     return [
-      _buildSectionTitle('تدوير'),
+      _buildSectionTitle('Rotate'),
       const SizedBox(height: 8),
       Row(
         children: [
           _ActionButton(
             icon: Icons.rotate_left,
-            label: '90° يسار',
+            label: '90° Left',
             onTap: () => widget.state.rotate(-90),
           ),
           const SizedBox(width: 8),
           _ActionButton(
             icon: Icons.rotate_right,
-            label: '90° يمين',
+            label: '90° Right',
             onTap: () => widget.state.rotate(90),
           ),
           const SizedBox(width: 8),
@@ -204,19 +204,19 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
       ),
       const SizedBox(height: 20),
 
-      _buildSectionTitle('قلب'),
+      _buildSectionTitle('Flip'),
       const SizedBox(height: 8),
       Row(
         children: [
           _ActionButton(
             icon: Icons.flip,
-            label: 'أفقي',
+            label: 'Horizontal',
             onTap: () => widget.state.flip(horizontal: true),
           ),
           const SizedBox(width: 8),
           _ActionButton(
             icon: Icons.flip,
-            label: 'عمودي',
+            label: 'Vertical',
             iconRotation: 1, // 90 degrees
             onTap: () => widget.state.flip(horizontal: false),
           ),
@@ -224,7 +224,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
       ),
       const SizedBox(height: 20),
 
-      _buildSectionTitle('قص'),
+      _buildSectionTitle('Crop'),
       const SizedBox(height: 8),
       _buildCropControls(),
     ];
@@ -238,7 +238,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
           spacing: 6,
           runSpacing: 6,
           children: [
-            _CropRatioChip(label: 'حر', isActive: true, onTap: () {}),
+            _CropRatioChip(label: 'Free', isActive: true, onTap: () {}),
             _CropRatioChip(label: '1:1', isActive: false, onTap: () {}),
             _CropRatioChip(label: '16:9', isActive: false, onTap: () {}),
             _CropRatioChip(label: '4:3', isActive: false, onTap: () {}),
@@ -257,18 +257,30 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
   // ===== قسم الفلاتر =====
   List<Widget> _buildFiltersSection() {
     final filters = [
-      {'filter': ImageFilter.none, 'label': 'بدون', 'icon': Icons.block},
-      {'filter': ImageFilter.grayscale, 'label': 'رمادي', 'icon': Icons.gradient},
-      {'filter': ImageFilter.sepia, 'label': 'بني', 'icon': Icons.photo_filter},
-      {'filter': ImageFilter.vintage, 'label': 'كلاسيكي', 'icon': Icons.auto_awesome},
-      {'filter': ImageFilter.cool, 'label': 'بارد', 'icon': Icons.ac_unit},
-      {'filter': ImageFilter.warm, 'label': 'دافئ', 'icon': Icons.wb_sunny},
-      {'filter': ImageFilter.dramatic, 'label': 'درامي', 'icon': Icons.theater_comedy},
-      {'filter': ImageFilter.fade, 'label': 'باهت', 'icon': Icons.blur_on},
+      {'filter': ImageFilter.none, 'label': 'None', 'icon': Icons.block},
+      {
+        'filter': ImageFilter.grayscale,
+        'label': 'Grayscale',
+        'icon': Icons.gradient,
+      },
+      {'filter': ImageFilter.sepia, 'label': 'Sepia', 'icon': Icons.photo_filter},
+      {
+        'filter': ImageFilter.vintage,
+        'label': 'Vintage',
+        'icon': Icons.auto_awesome,
+      },
+      {'filter': ImageFilter.cool, 'label': 'Cool', 'icon': Icons.ac_unit},
+      {'filter': ImageFilter.warm, 'label': 'Warm', 'icon': Icons.wb_sunny},
+      {
+        'filter': ImageFilter.dramatic,
+        'label': 'Dramatic',
+        'icon': Icons.theater_comedy,
+      },
+      {'filter': ImageFilter.fade, 'label': 'Fade', 'icon': Icons.blur_on},
     ];
 
     return [
-      _buildSectionTitle('الفلاتر'),
+      _buildSectionTitle('Filters'),
       const SizedBox(height: 12),
       GridView.builder(
         shrinkWrap: true,
@@ -298,7 +310,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
   // ===== قسم تغيير الحجم =====
   List<Widget> _buildResizeSection() {
     return [
-      _buildSectionTitle('تغيير الحجم'),
+      _buildSectionTitle('Resize'),
       const SizedBox(height: 12),
       _ResizeInputFields(
         onResize: (w, h, maintain) =>
@@ -616,7 +628,7 @@ class _CropInputFieldsState extends State<_CropInputFields> {
               child: TextField(
                 controller: _wCtrl,
                 style: const TextStyle(fontSize: 12, color: Colors.white70),
-                decoration: _fieldDecor('العرض'),
+                decoration: _fieldDecor('Width'),
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -625,7 +637,7 @@ class _CropInputFieldsState extends State<_CropInputFields> {
               child: TextField(
                 controller: _hCtrl,
                 style: const TextStyle(fontSize: 12, color: Colors.white70),
-                decoration: _fieldDecor('الارتفاع'),
+                decoration: _fieldDecor('Height'),
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -651,7 +663,7 @@ class _CropInputFieldsState extends State<_CropInputFields> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('تطبيق القص', style: TextStyle(fontSize: 12)),
+            child: const Text('Apply Crop', style: TextStyle(fontSize: 12)),
           ),
         ),
       ],
@@ -705,7 +717,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
               child: TextField(
                 controller: _wCtrl,
                 style: const TextStyle(fontSize: 12, color: Colors.white70),
-                decoration: _fieldDecor('العرض (px)'),
+                decoration: _fieldDecor('Width (px)'),
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -721,7 +733,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
               child: TextField(
                 controller: _hCtrl,
                 style: const TextStyle(fontSize: 12, color: Colors.white70),
-                decoration: _fieldDecor('الارتفاع (px)'),
+                decoration: _fieldDecor('Height (px)'),
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -739,7 +751,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
               side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
             ),
             Text(
-              'الحفاظ على النسبة',
+              'Keep aspect ratio',
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.white.withValues(alpha: 0.5),
@@ -749,7 +761,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
         ),
 
         // أحجام سريعة
-        _buildSectionTitle('أحجام سريعة'),
+        _buildSectionTitle('Quick Sizes'),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,
@@ -782,7 +794,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
               ),
             ),
             child:
-                const Text('تطبيق الحجم', style: TextStyle(fontSize: 12)),
+                const Text('Apply Size', style: TextStyle(fontSize: 12)),
           ),
         ),
       ],

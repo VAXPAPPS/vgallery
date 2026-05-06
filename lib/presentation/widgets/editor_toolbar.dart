@@ -32,7 +32,7 @@ class EditorToolbar extends StatelessWidget {
           // إغلاق
           _ToolbarButton(
             icon: Icons.close,
-            tooltip: 'إغلاق',
+            tooltip: 'Close',
             onTap: onClose,
           ),
           const SizedBox(width: 8),
@@ -77,7 +77,7 @@ class EditorToolbar extends StatelessWidget {
           // التراجع
           _ToolbarButton(
             icon: Icons.undo,
-            tooltip: 'تراجع (Ctrl+Z)',
+            tooltip: 'Undo (Ctrl+Z)',
             onTap: state.canUndo ? () => state.undo() : null,
             disabled: !state.canUndo,
           ),
@@ -86,7 +86,7 @@ class EditorToolbar extends StatelessWidget {
           // الإعادة
           _ToolbarButton(
             icon: Icons.redo,
-            tooltip: 'إعادة (Ctrl+Y)',
+            tooltip: 'Redo (Ctrl+Y)',
             onTap: state.canRedo ? () => state.redo() : null,
             disabled: !state.canRedo,
           ),
@@ -95,7 +95,7 @@ class EditorToolbar extends StatelessWidget {
           // إعادة تعيين
           _ToolbarButton(
             icon: Icons.restart_alt,
-            tooltip: 'إعادة تعيين الكل',
+            tooltip: 'Reset All',
             onTap: state.hasChanges ? () => state.resetAll() : null,
             disabled: !state.hasChanges,
           ),
@@ -111,7 +111,7 @@ class EditorToolbar extends StatelessWidget {
           // تصدير
           _ToolbarButton(
             icon: Icons.file_download_outlined,
-            tooltip: 'تصدير',
+            tooltip: 'Export',
             onTap: onExport,
           ),
           const SizedBox(width: 8),
@@ -120,7 +120,7 @@ class EditorToolbar extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: state.hasChanges ? onSave : null,
             icon: const Icon(Icons.save_outlined, size: 16),
-            label: const Text('حفظ', style: TextStyle(fontSize: 12)),
+            label: const Text('Save', style: TextStyle(fontSize: 12)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white.withValues(alpha: 0.12),
               foregroundColor: Colors.white,

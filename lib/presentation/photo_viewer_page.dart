@@ -191,7 +191,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
               // تحرير
               IconButton(
                 icon: const Icon(Icons.edit_outlined, color: Colors.white70),
-                tooltip: 'تحرير',
+                tooltip: 'Edit',
                 onPressed: _openEditor,
               ),
               // المفضلة
@@ -200,7 +200,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   photo.isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: photo.isFavorite ? Colors.redAccent : Colors.white70,
                 ),
-                tooltip: 'المفضلة',
+                tooltip: 'Favorites',
                 onPressed: () => widget.onFavoriteToggle?.call(photo),
               ),
               // Slideshow
@@ -213,7 +213,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                       ? Colors.amber
                       : Colors.white70,
                 ),
-                tooltip: 'عرض شرائح',
+                tooltip: 'Slideshow',
                 onPressed: () => _state.toggleSlideshow(),
               ),
               // شريط Thumbnails
@@ -222,7 +222,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   Icons.view_carousel_outlined,
                   color: _showThumbnailStrip ? Colors.white : Colors.white38,
                 ),
-                tooltip: 'شريط المصغرات',
+                tooltip: 'Thumbnail Strip',
                 onPressed: () =>
                     setState(() => _showThumbnailStrip = !_showThumbnailStrip),
               ),

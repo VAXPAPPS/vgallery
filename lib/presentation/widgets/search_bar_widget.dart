@@ -16,7 +16,7 @@ class SearchBarWidget extends StatelessWidget {
     return TextField(
       style: const TextStyle(fontSize: 13, color: Colors.white),
       decoration: InputDecoration(
-        hintText: 'بحث عن صورة...',
+        hintText: 'Search photos...',
         hintStyle: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.3)),
         prefixIcon: Icon(Icons.search, size: 18, color: Colors.white.withValues(alpha: 0.3)),
         filled: true,
