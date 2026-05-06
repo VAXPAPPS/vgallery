@@ -30,11 +30,7 @@ class EditorToolbar extends StatelessWidget {
       child: Row(
         children: [
           // إغلاق
-          _ToolbarButton(
-            icon: Icons.close,
-            tooltip: 'Close',
-            onTap: onClose,
-          ),
+          _ToolbarButton(icon: Icons.close, tooltip: 'Close', onTap: onClose),
           const SizedBox(width: 8),
 
           // اسم الملف

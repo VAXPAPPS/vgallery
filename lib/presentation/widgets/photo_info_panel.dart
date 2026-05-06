@@ -8,11 +8,7 @@ class PhotoInfoPanel extends StatefulWidget {
   final PhotoItem photo;
   final VoidCallback onClose;
 
-  const PhotoInfoPanel({
-    super.key,
-    required this.photo,
-    required this.onClose,
-  });
+  const PhotoInfoPanel({super.key, required this.photo, required this.onClose});
 
   @override
   State<PhotoInfoPanel> createState() => _PhotoInfoPanelState();
@@ -110,7 +106,11 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 16, color: Colors.white38),
+                  icon: const Icon(
+                    Icons.close,
+                    size: 16,
+                    color: Colors.white38,
+                  ),
                   onPressed: widget.onClose,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -138,18 +138,27 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
                       : Container(
                           height: 150,
                           color: Colors.white.withValues(alpha: 0.05),
-                          child: const Icon(Icons.image,
-                              color: Colors.white24, size: 48),
+                          child: const Icon(
+                            Icons.image,
+                            color: Colors.white24,
+                            size: 48,
+                          ),
                         ),
                 ),
                 const SizedBox(height: 16),
 
                 // معلومات الملف
                 _buildSection('File Info', [
-                  _InfoRow('Name', '${widget.photo.name}${widget.photo.extension}'),
+                  _InfoRow(
+                    'Name',
+                    '${widget.photo.name}${widget.photo.extension}',
+                  ),
                   _InfoRow('Size', widget.photo.formattedSize),
                   _InfoRow('Dimensions', widget.photo.dimensions),
-                  _InfoRow('Type', widget.photo.extension.toUpperCase().replaceFirst('.', '')),
+                  _InfoRow(
+                    'Type',
+                    widget.photo.extension.toUpperCase().replaceFirst('.', ''),
+                  ),
                   _InfoRow('Modified', _formatDate(widget.photo.modifiedDate)),
                   _InfoRow('Path', widget.photo.path),
                 ]),
@@ -209,35 +218,31 @@ class _PhotoInfoPanelState extends State<PhotoInfoPanel> {
           ),
         ),
         const SizedBox(height: 8),
-        ...rows.map((row) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                      row.label,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.white38,
-                      ),
-                    ),
+        ...rows.map(
+          (row) => Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 90,
+                  child: Text(
+                    row.label,
+                    style: const TextStyle(fontSize: 11, color: Colors.white38),
                   ),
-                  Expanded(
-                    child: Text(
-                      row.value,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.white70,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
+                ),
+                Expanded(
+                  child: Text(
+                    row.value,
+                    style: const TextStyle(fontSize: 11, color: Colors.white70),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
-                ],
-              ),
-            )),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

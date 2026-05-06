@@ -5,11 +5,7 @@ class SearchBarWidget extends StatelessWidget {
   final Function(String query) onSearch;
   final String? initialValue;
 
-  const SearchBarWidget({
-    super.key,
-    required this.onSearch,
-    this.initialValue,
-  });
+  const SearchBarWidget({super.key, required this.onSearch, this.initialValue});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +13,15 @@ class SearchBarWidget extends StatelessWidget {
       style: const TextStyle(fontSize: 13, color: Colors.white),
       decoration: InputDecoration(
         hintText: 'Search photos...',
-        hintStyle: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.3)),
-        prefixIcon: Icon(Icons.search, size: 18, color: Colors.white.withValues(alpha: 0.3)),
+        hintStyle: TextStyle(
+          fontSize: 12,
+          color: Colors.white.withValues(alpha: 0.3),
+        ),
+        prefixIcon: Icon(
+          Icons.search,
+          size: 18,
+          color: Colors.white.withValues(alpha: 0.3),
+        ),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
         border: OutlineInputBorder(

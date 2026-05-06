@@ -2,50 +2,48 @@ import 'package:flutter/foundation.dart';
 import '../data/image_editor_service.dart';
 import '../domain/edit_operation.dart';
 
-/// حالة محرر الصور
 class EditorState extends ChangeNotifier {
   final ImageEditorService _editorService = ImageEditorService();
 
-  // الصورة الأصلية
   Uint8List? _originalBytes;
   Uint8List? get originalBytes => _originalBytes;
 
-  // الصورة الحالية (بعد التعديلات)
   Uint8List? _currentBytes;
   Uint8List? get currentBytes => _currentBytes;
 
-  // مسار الملف الأصلي
   String _filePath = '';
   String get filePath => _filePath;
 
-  // سجل العمليات
-  final List<Uint8List> _undoStack = [];
-  final List<Uint8List> _redoStack = [];
+  final List<_EditorSnapshot> _undoStack = [];
+  final List<_EditorSnapshot> _redoStack = [];
   final List<EditOperation> _operations = [];
 
   bool get canUndo => _undoStack.isNotEmpty;
   bool get canRedo => _redoStack.isNotEmpty;
   List<EditOperation> get operations => List.unmodifiable(_operations);
 
-  // حالة المعالجة
   bool _isProcessing = false;
   bool get isProcessing => _isProcessing;
 
-  // القيم الحالية
   double _brightness = 0;
   double get brightness => _brightness;
   double _contrast = 0;
   double get contrast => _contrast;
   double _saturation = 0;
   double get saturation => _saturation;
-  Uint8List? _adjustmentBaseBytes;
 
-  // الفلتر الحالي
   ImageFilter _currentFilter = ImageFilter.none;
   ImageFilter get currentFilter => _currentFilter;
-  Uint8List? _filterBaseBytes;
 
-  // وضع القص
+  double _rotationAngle = 0;
+  double get rotationAngle => _rotationAngle;
+
+  bool _flipHorizontal = false;
+  bool get flipHorizontalPreview => _flipHorizontal;
+
+  bool _flipVertical = false;
+  bool get flipVerticalPreview => _flipVertical;
+
   bool _isCropping = false;
   bool get isCropping => _isCropping;
   CropRect? _cropRect;
@@ -53,10 +51,14 @@ class EditorState extends ChangeNotifier {
   CropAspectRatio _cropAspectRatio = CropAspectRatio.free;
   CropAspectRatio get cropAspectRatio => _cropAspectRatio;
 
-  // هل تم تعديل الصورة؟
-  bool get hasChanges => _undoStack.isNotEmpty;
+  int? _resizeWidth;
+  int? _resizeHeight;
+  bool _resizeMaintainAspect = true;
 
-  /// فتح صورة للتحرير
+  String? _activePreviewEdit;
+
+  bool get hasChanges => _operations.isNotEmpty;
+
   Future<void> loadImage(String path) async {
     _isProcessing = true;
     notifyListeners();
@@ -69,259 +71,217 @@ class EditorState extends ChangeNotifier {
     _undoStack.clear();
     _redoStack.clear();
     _operations.clear();
+    _resetPreviewValues();
+
+    _isProcessing = false;
+    notifyListeners();
+  }
+
+  void _resetPreviewValues() {
     _brightness = 0;
     _contrast = 0;
     _saturation = 0;
-    _adjustmentBaseBytes = null;
     _currentFilter = ImageFilter.none;
-    _filterBaseBytes = null;
+    _rotationAngle = 0;
+    _flipHorizontal = false;
+    _flipVertical = false;
     _isCropping = false;
     _cropRect = null;
-
-    _isProcessing = false;
-    notifyListeners();
+    _cropAspectRatio = CropAspectRatio.free;
+    _resizeWidth = null;
+    _resizeHeight = null;
+    _resizeMaintainAspect = true;
+    _activePreviewEdit = null;
   }
 
-  /// تنفيذ عملية مع حفظ Undo
-  Future<void> _applyOperation(
-    EditOperation operation,
-    Future<Uint8List?> Function() processor,
-  ) async {
+  void _beginEdit([String? previewEdit]) {
     if (_currentBytes == null) return;
+    if (previewEdit != null && _activePreviewEdit == previewEdit) return;
 
-    _isProcessing = true;
-    notifyListeners();
-
-    final result = await processor();
-    if (result != null) {
-      // حفظ الحالة الحالية في Undo
-      _undoStack.add(_currentBytes!);
-      _redoStack.clear(); // مسح redo عند عملية جديدة
-      _operations.add(operation);
-      _currentBytes = result;
-      if (operation.type != EditType.filter) {
-        _currentFilter = ImageFilter.none;
-        _filterBaseBytes = null;
-      }
-      if (!_isAdjustmentOperation(operation.type)) {
-        _resetAdjustmentState();
-      }
-    }
-
-    _isProcessing = false;
-    notifyListeners();
+    _undoStack.add(_snapshot());
+    _redoStack.clear();
+    _activePreviewEdit = previewEdit;
   }
 
-  /// تغيير الحجم
+  _EditorSnapshot _snapshot() {
+    return _EditorSnapshot(
+      operations: List<EditOperation>.from(_operations),
+      brightness: _brightness,
+      contrast: _contrast,
+      saturation: _saturation,
+      filter: _currentFilter,
+      rotationAngle: _rotationAngle,
+      flipHorizontal: _flipHorizontal,
+      flipVertical: _flipVertical,
+      cropRect: _cropRect,
+      cropAspectRatio: _cropAspectRatio,
+      resizeWidth: _resizeWidth,
+      resizeHeight: _resizeHeight,
+      resizeMaintainAspect: _resizeMaintainAspect,
+    );
+  }
+
+  void _restore(_EditorSnapshot snapshot) {
+    _operations
+      ..clear()
+      ..addAll(snapshot.operations);
+    _brightness = snapshot.brightness;
+    _contrast = snapshot.contrast;
+    _saturation = snapshot.saturation;
+    _currentFilter = snapshot.filter;
+    _rotationAngle = snapshot.rotationAngle;
+    _flipHorizontal = snapshot.flipHorizontal;
+    _flipVertical = snapshot.flipVertical;
+    _cropRect = snapshot.cropRect;
+    _cropAspectRatio = snapshot.cropAspectRatio;
+    _resizeWidth = snapshot.resizeWidth;
+    _resizeHeight = snapshot.resizeHeight;
+    _resizeMaintainAspect = snapshot.resizeMaintainAspect;
+    _activePreviewEdit = null;
+  }
+
+  void _removeOperationTypes(Set<EditType> types) {
+    _operations.removeWhere((operation) => types.contains(operation.type));
+  }
+
+  void _syncAdjustmentOperation() {
+    _removeOperationTypes({
+      EditType.brightness,
+      EditType.contrast,
+      EditType.saturation,
+    });
+
+    if (_brightness == 0 && _contrast == 0 && _saturation == 0) return;
+
+    _operations.add(
+      EditOperation(
+        type: EditType.brightness,
+        params: {
+          'brightness': _brightness.toInt(),
+          'contrast': _contrast.toInt(),
+          'saturation': _saturation.toInt(),
+        },
+      ),
+    );
+  }
+
   Future<void> resize({
     int? width,
     int? height,
     bool maintainAspect = true,
   }) async {
-    await _applyOperation(
+    if (width == null && height == null) return;
+    _beginEdit();
+    _resizeWidth = width;
+    _resizeHeight = height;
+    _resizeMaintainAspect = maintainAspect;
+    _removeOperationTypes({EditType.resize});
+    _operations.add(
       EditOperation(
         type: EditType.resize,
-        params: {'width': width, 'height': height},
-      ),
-      () => _editorService.resize(
-        _currentBytes!,
-        width: width,
-        height: height,
-        maintainAspect: maintainAspect,
+        params: {
+          'width': width,
+          'height': height,
+          'maintainAspect': maintainAspect,
+        },
       ),
     );
+    notifyListeners();
   }
 
-  /// القص
   Future<void> crop(int x, int y, int width, int height) async {
-    await _applyOperation(
+    _beginEdit();
+    _cropRect = CropRect(
+      left: x.toDouble(),
+      top: y.toDouble(),
+      right: (x + width).toDouble(),
+      bottom: (y + height).toDouble(),
+    );
+    _isCropping = false;
+    _removeOperationTypes({EditType.crop});
+    _operations.add(
       EditOperation(
         type: EditType.crop,
         params: {'x': x, 'y': y, 'width': width, 'height': height},
       ),
-      () => _editorService.crop(
-        _currentBytes!,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-      ),
     );
-    _isCropping = false;
-    _cropRect = null;
+    notifyListeners();
   }
 
-  /// التدوير
   Future<void> rotate(double angle) async {
-    await _applyOperation(
+    _beginEdit();
+    _rotationAngle = (_rotationAngle + angle) % 360;
+    _operations.add(
       EditOperation(type: EditType.rotate, params: {'angle': angle}),
-      () => _editorService.rotate(_currentBytes!, angle),
     );
+    notifyListeners();
   }
 
-  /// القلب
   Future<void> flip({bool horizontal = true}) async {
-    await _applyOperation(
+    _beginEdit();
+    if (horizontal) {
+      _flipHorizontal = !_flipHorizontal;
+    } else {
+      _flipVertical = !_flipVertical;
+    }
+    _operations.add(
       EditOperation(
         type: horizontal ? EditType.flipHorizontal : EditType.flipVertical,
         params: {},
       ),
-      () => _editorService.flip(_currentBytes!, horizontal: horizontal),
     );
+    notifyListeners();
   }
 
-  /// تعديل السطوع
   Future<void> setBrightness(double value) async {
+    if (value == _brightness) return;
+    _beginEdit('adjustments');
     _brightness = value;
+    _syncAdjustmentOperation();
     notifyListeners();
   }
 
-  /// تطبيق السطوع
   Future<void> applyBrightness() async {
-    await _applyAdjustments(EditType.brightness);
+    _activePreviewEdit = null;
   }
 
-  /// تعديل التباين
   Future<void> setContrast(double value) async {
+    if (value == _contrast) return;
+    _beginEdit('adjustments');
     _contrast = value;
+    _syncAdjustmentOperation();
     notifyListeners();
   }
 
-  /// تطبيق التباين
   Future<void> applyContrast() async {
-    await _applyAdjustments(EditType.contrast);
+    _activePreviewEdit = null;
   }
 
-  /// تعديل التشبع
   Future<void> setSaturation(double value) async {
+    if (value == _saturation) return;
+    _beginEdit('adjustments');
     _saturation = value;
+    _syncAdjustmentOperation();
     notifyListeners();
   }
 
-  /// تطبيق التشبع
   Future<void> applySaturation() async {
-    await _applyAdjustments(EditType.saturation);
+    _activePreviewEdit = null;
   }
 
-  bool _isAdjustmentOperation(EditType type) {
-    return type == EditType.brightness ||
-        type == EditType.contrast ||
-        type == EditType.saturation;
-  }
-
-  bool get _hasAdjustmentValues {
-    return _brightness != 0 || _contrast != 0 || _saturation != 0;
-  }
-
-  void _resetAdjustmentState() {
-    _brightness = 0;
-    _contrast = 0;
-    _saturation = 0;
-    _adjustmentBaseBytes = null;
-  }
-
-  Future<Uint8List?> _buildAdjustedImage(Uint8List baseBytes) async {
-    Uint8List result = Uint8List.fromList(baseBytes);
-
-    if (_brightness != 0) {
-      final adjusted = await _editorService.adjustBrightness(
-        result,
-        _brightness.toInt(),
-      );
-      if (adjusted == null) return null;
-      result = adjusted;
-    }
-
-    if (_contrast != 0) {
-      final adjusted = await _editorService.adjustContrast(
-        result,
-        _contrast.toInt(),
-      );
-      if (adjusted == null) return null;
-      result = adjusted;
-    }
-
-    if (_saturation != 0) {
-      final adjusted = await _editorService.adjustSaturation(
-        result,
-        _saturation.toInt(),
-      );
-      if (adjusted == null) return null;
-      result = adjusted;
-    }
-
-    return result;
-  }
-
-  Future<void> _applyAdjustments(EditType type) async {
-    if (_currentBytes == null) return;
-    if (!_hasAdjustmentValues && _adjustmentBaseBytes == null) return;
-
-    _isProcessing = true;
-    notifyListeners();
-
-    final baseBytes =
-        _adjustmentBaseBytes ?? Uint8List.fromList(_currentBytes!);
-    final result = _hasAdjustmentValues
-        ? await _buildAdjustedImage(baseBytes)
-        : Uint8List.fromList(baseBytes);
-
-    if (result != null) {
-      _undoStack.add(_currentBytes!);
-      _redoStack.clear();
-      _operations.add(
-        EditOperation(
-          type: type,
-          params: {
-            'brightness': _brightness.toInt(),
-            'contrast': _contrast.toInt(),
-            'saturation': _saturation.toInt(),
-          },
-        ),
-      );
-      _currentBytes = result;
-      _adjustmentBaseBytes = _hasAdjustmentValues ? baseBytes : null;
-      _currentFilter = ImageFilter.none;
-      _filterBaseBytes = null;
-    }
-
-    _isProcessing = false;
-    notifyListeners();
-  }
-
-  /// تطبيق فلتر
   Future<void> applyFilter(ImageFilter filter) async {
-    if (_currentBytes == null || filter == _currentFilter) return;
-
-    _isProcessing = true;
-    notifyListeners();
-
-    Uint8List? result;
-    final baseBytes = _filterBaseBytes ?? Uint8List.fromList(_currentBytes!);
-
-    if (filter == ImageFilter.none) {
-      result = Uint8List.fromList(baseBytes);
-    } else {
-      result = await _editorService.applyFilter(baseBytes, filter);
-    }
-
-    if (result != null) {
-      _undoStack.add(_currentBytes!);
-      _redoStack.clear();
+    if (filter == _currentFilter) return;
+    _beginEdit();
+    _currentFilter = filter;
+    _removeOperationTypes({EditType.filter});
+    if (filter != ImageFilter.none) {
       _operations.add(
         EditOperation(type: EditType.filter, params: {'filter': filter.name}),
       );
-      _currentBytes = result;
-      _currentFilter = filter;
-      _filterBaseBytes = filter == ImageFilter.none ? null : baseBytes;
-      _resetAdjustmentState();
     }
-
-    _isProcessing = false;
     notifyListeners();
   }
 
-  /// تبديل وضع القص
   void toggleCropMode() {
     _isCropping = !_isCropping;
     if (!_isCropping) {
@@ -330,114 +290,241 @@ class EditorState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// تعيين منطقة القص
   void setCropRect(CropRect rect) {
     _cropRect = rect;
     notifyListeners();
   }
 
-  /// تعيين نسبة القص
   void setCropAspectRatio(CropAspectRatio ratio) {
     _cropAspectRatio = ratio;
     notifyListeners();
   }
 
-  /// التراجع
   Future<void> undo() async {
     if (!canUndo) return;
-    _redoStack.add(_currentBytes!);
-    _currentBytes = _undoStack.removeLast();
-    if (_operations.isNotEmpty) _operations.removeLast();
-    _currentFilter = ImageFilter.none;
-    _filterBaseBytes = null;
-    _resetAdjustmentState();
+    _redoStack.add(_snapshot());
+    _restore(_undoStack.removeLast());
     notifyListeners();
   }
 
-  /// الإعادة
   Future<void> redo() async {
     if (!canRedo) return;
-    _undoStack.add(_currentBytes!);
-    _currentBytes = _redoStack.removeLast();
-    _currentFilter = ImageFilter.none;
-    _filterBaseBytes = null;
-    _resetAdjustmentState();
+    _undoStack.add(_snapshot());
+    _restore(_redoStack.removeLast());
     notifyListeners();
   }
 
-  /// إعادة تعيين كل التعديلات
   void resetAll() {
     if (_originalBytes == null) return;
     _undoStack.clear();
     _redoStack.clear();
     _operations.clear();
     _currentBytes = Uint8List.fromList(_originalBytes!);
-    _resetAdjustmentState();
-    _currentFilter = ImageFilter.none;
-    _filterBaseBytes = null;
-    _isCropping = false;
-    _cropRect = null;
+    _resetPreviewValues();
     notifyListeners();
   }
 
-  /// حفظ فوق الأصلي
-  Future<bool> save() async {
-    if (_currentBytes == null) return false;
-    return await _editorService.saveToFile(_currentBytes!, _filePath);
-  }
+  Future<Uint8List?> _renderEditedBytes({
+    ImageExportConfig? exportConfig,
+  }) async {
+    if (_originalBytes == null) return null;
 
-  /// حفظ كنسخة
-  Future<String?> saveAsCopy({String? format}) async {
-    if (_currentBytes == null) return null;
+    Uint8List bytes = Uint8List.fromList(_originalBytes!);
 
-    Uint8List exportBytes = _currentBytes!;
-    if (format != null) {
-      final exported = await _editorService.export(
-        _currentBytes!,
-        format: format,
+    if (_cropRect != null) {
+      final cropped = await _editorService.crop(
+        bytes,
+        x: _cropRect!.left.round(),
+        y: _cropRect!.top.round(),
+        width: _cropRect!.width.round(),
+        height: _cropRect!.height.round(),
       );
-      if (exported != null) exportBytes = exported;
+      if (cropped == null) return null;
+      bytes = cropped;
     }
 
-    return await _editorService.saveAsCopy(
-      exportBytes,
-      _filePath,
-      format: format,
-    );
-  }
-
-  /// تصدير بإعدادات محددة
-  Future<bool> exportImage(ImageExportConfig config) async {
-    if (_currentBytes == null) return false;
-
-    Uint8List bytes = _currentBytes!;
-
-    // تغيير الحجم إذا طُلب
-    if (config.width != null || config.height != null) {
+    if (_resizeWidth != null || _resizeHeight != null) {
       final resized = await _editorService.resize(
         bytes,
-        width: config.width,
-        height: config.height,
-        maintainAspect: config.maintainAspectRatio,
+        width: _resizeWidth,
+        height: _resizeHeight,
+        maintainAspect: _resizeMaintainAspect,
       );
-      if (resized != null) bytes = resized;
+      if (resized == null) return null;
+      bytes = resized;
     }
 
-    // التصدير بالصيغة المطلوبة
-    final exported = await _editorService.export(
-      bytes,
-      format: config.format,
-      quality: config.quality,
-    );
+    final normalizedRotation = _rotationAngle % 360;
+    if (normalizedRotation != 0) {
+      final rotated = await _editorService.rotate(bytes, normalizedRotation);
+      if (rotated == null) return null;
+      bytes = rotated;
+    }
 
-    if (exported == null) return false;
+    if (_flipHorizontal) {
+      final flipped = await _editorService.flip(bytes, horizontal: true);
+      if (flipped == null) return null;
+      bytes = flipped;
+    }
 
-    final savedPath = await _editorService.saveAsCopy(
-      exported,
-      _filePath,
-      format: config.format,
-    );
+    if (_flipVertical) {
+      final flipped = await _editorService.flip(bytes, horizontal: false);
+      if (flipped == null) return null;
+      bytes = flipped;
+    }
 
+    if (_brightness != 0) {
+      final adjusted = await _editorService.adjustBrightness(
+        bytes,
+        _brightness.toInt(),
+      );
+      if (adjusted == null) return null;
+      bytes = adjusted;
+    }
+
+    if (_contrast != 0) {
+      final adjusted = await _editorService.adjustContrast(
+        bytes,
+        _contrast.toInt(),
+      );
+      if (adjusted == null) return null;
+      bytes = adjusted;
+    }
+
+    if (_saturation != 0) {
+      final adjusted = await _editorService.adjustSaturation(
+        bytes,
+        _saturation.toInt(),
+      );
+      if (adjusted == null) return null;
+      bytes = adjusted;
+    }
+
+    if (_currentFilter != ImageFilter.none) {
+      final filtered = await _editorService.applyFilter(bytes, _currentFilter);
+      if (filtered == null) return null;
+      bytes = filtered;
+    }
+
+    if (exportConfig?.width != null || exportConfig?.height != null) {
+      final resized = await _editorService.resize(
+        bytes,
+        width: exportConfig?.width,
+        height: exportConfig?.height,
+        maintainAspect: exportConfig?.maintainAspectRatio ?? true,
+      );
+      if (resized == null) return null;
+      bytes = resized;
+    }
+
+    return bytes;
+  }
+
+  Future<bool> save() async {
+    if (_originalBytes == null) return false;
+
+    _isProcessing = true;
+    notifyListeners();
+
+    final bytes = await _renderEditedBytes();
+    final success =
+        bytes != null && await _editorService.saveToFile(bytes, _filePath);
+
+    if (success) {
+      _originalBytes = bytes;
+      _currentBytes = Uint8List.fromList(bytes);
+      _undoStack.clear();
+      _redoStack.clear();
+      _operations.clear();
+      _resetPreviewValues();
+    }
+
+    _isProcessing = false;
+    notifyListeners();
+    return success;
+  }
+
+  Future<String?> saveAsCopy({String? format}) async {
+    if (_originalBytes == null) return null;
+
+    _isProcessing = true;
+    notifyListeners();
+
+    Uint8List? exportBytes = await _renderEditedBytes();
+    if (exportBytes != null && format != null) {
+      exportBytes = await _editorService.export(exportBytes, format: format);
+    }
+
+    final path = exportBytes == null
+        ? null
+        : await _editorService.saveAsCopy(
+            exportBytes,
+            _filePath,
+            format: format,
+          );
+
+    _isProcessing = false;
+    notifyListeners();
+    return path;
+  }
+
+  Future<bool> exportImage(ImageExportConfig config) async {
+    if (_originalBytes == null) return false;
+
+    _isProcessing = true;
+    notifyListeners();
+
+    Uint8List? bytes = await _renderEditedBytes(exportConfig: config);
+    if (bytes != null) {
+      bytes = await _editorService.export(
+        bytes,
+        format: config.format,
+        quality: config.quality,
+      );
+    }
+
+    final savedPath = bytes == null
+        ? null
+        : await _editorService.saveAsCopy(
+            bytes,
+            _filePath,
+            format: config.format,
+          );
+
+    _isProcessing = false;
+    notifyListeners();
     return savedPath != null;
   }
+}
+
+class _EditorSnapshot {
+  final List<EditOperation> operations;
+  final double brightness;
+  final double contrast;
+  final double saturation;
+  final ImageFilter filter;
+  final double rotationAngle;
+  final bool flipHorizontal;
+  final bool flipVertical;
+  final CropRect? cropRect;
+  final CropAspectRatio cropAspectRatio;
+  final int? resizeWidth;
+  final int? resizeHeight;
+  final bool resizeMaintainAspect;
+
+  const _EditorSnapshot({
+    required this.operations,
+    required this.brightness,
+    required this.contrast,
+    required this.saturation,
+    required this.filter,
+    required this.rotationAngle,
+    required this.flipHorizontal,
+    required this.flipVertical,
+    required this.cropRect,
+    required this.cropAspectRatio,
+    required this.resizeWidth,
+    required this.resizeHeight,
+    required this.resizeMaintainAspect,
+  });
 }

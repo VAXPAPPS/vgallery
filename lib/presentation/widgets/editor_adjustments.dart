@@ -247,9 +247,7 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
         ),
         const SizedBox(height: 12),
         // إدخال الأبعاد يدوياً
-        _CropInputFields(
-          onCrop: (x, y, w, h) => widget.state.crop(x, y, w, h),
-        ),
+        _CropInputFields(onCrop: (x, y, w, h) => widget.state.crop(x, y, w, h)),
       ],
     );
   }
@@ -263,7 +261,11 @@ class _EditorAdjustmentsState extends State<EditorAdjustments> {
         'label': 'Grayscale',
         'icon': Icons.gradient,
       },
-      {'filter': ImageFilter.sepia, 'label': 'Sepia', 'icon': Icons.photo_filter},
+      {
+        'filter': ImageFilter.sepia,
+        'label': 'Sepia',
+        'icon': Icons.photo_filter,
+      },
       {
         'filter': ImageFilter.vintage,
         'label': 'Vintage',
@@ -370,8 +372,8 @@ class _TabButtonState extends State<_TabButton> {
               color: widget.isActive
                   ? Colors.white.withValues(alpha: 0.08)
                   : _isHovered
-                      ? Colors.white.withValues(alpha: 0.04)
-                      : Colors.transparent,
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.transparent,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -440,8 +442,11 @@ class _ActionButtonState extends State<_ActionButton> {
               children: [
                 RotatedBox(
                   quarterTurns: widget.iconRotation,
-                  child: Icon(widget.icon,
-                      size: 18, color: Colors.white.withValues(alpha: 0.6)),
+                  child: Icon(
+                    widget.icon,
+                    size: 18,
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -494,8 +499,8 @@ class _FilterButtonState extends State<_FilterButton> {
             color: widget.isActive
                 ? Colors.white.withValues(alpha: 0.12)
                 : _isHovered
-                    ? Colors.white.withValues(alpha: 0.06)
-                    : Colors.white.withValues(alpha: 0.03),
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.white.withValues(alpha: 0.03),
             border: Border.all(
               color: widget.isActive
                   ? Colors.white.withValues(alpha: 0.2)
@@ -516,8 +521,9 @@ class _FilterButtonState extends State<_FilterButton> {
                 style: TextStyle(
                   fontSize: 11,
                   color: widget.isActive ? Colors.white : Colors.white54,
-                  fontWeight:
-                      widget.isActive ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: widget.isActive
+                      ? FontWeight.w600
+                      : FontWeight.normal,
                 ),
               ),
             ],
@@ -584,17 +590,20 @@ class _CropInputFieldsState extends State<_CropInputFields> {
   final _hCtrl = TextEditingController(text: '500');
 
   InputDecoration _fieldDecor(String label) => InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.3)),
-        filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.04),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        isDense: true,
-      );
+    labelText: label,
+    labelStyle: TextStyle(
+      fontSize: 11,
+      color: Colors.white.withValues(alpha: 0.3),
+    ),
+    filled: true,
+    fillColor: Colors.white.withValues(alpha: 0.04),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide.none,
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+    isDense: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -695,17 +704,20 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
   bool _maintainAspect = true;
 
   InputDecoration _fieldDecor(String label) => InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.3)),
-        filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.04),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        isDense: true,
-      );
+    labelText: label,
+    labelStyle: TextStyle(
+      fontSize: 11,
+      color: Colors.white.withValues(alpha: 0.3),
+    ),
+    filled: true,
+    fillColor: Colors.white.withValues(alpha: 0.04),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide.none,
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+    isDense: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -744,8 +756,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
           children: [
             Checkbox(
               value: _maintainAspect,
-              onChanged: (v) =>
-                  setState(() => _maintainAspect = v ?? true),
+              onChanged: (v) => setState(() => _maintainAspect = v ?? true),
               activeColor: Colors.white24,
               checkColor: Colors.white,
               side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
@@ -793,8 +804,7 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child:
-                const Text('Apply Size', style: TextStyle(fontSize: 12)),
+            child: const Text('Apply Size', style: TextStyle(fontSize: 12)),
           ),
         ),
       ],
@@ -817,7 +827,10 @@ class _ResizeInputFieldsState extends State<_ResizeInputFields> {
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.5)),
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.white.withValues(alpha: 0.5),
+          ),
         ),
       ),
     );

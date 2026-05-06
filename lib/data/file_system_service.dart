@@ -7,7 +7,14 @@ import '../domain/folder_item.dart';
 class FileSystemService {
   /// الامتدادات المدعومة
   static const supportedExtensions = {
-    '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif',
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.webp',
+    '.bmp',
+    '.gif',
+    '.tiff',
+    '.tif',
   };
 
   /// فحص مجلد واستخراج الصور
@@ -34,13 +41,15 @@ class FileSystemService {
             }
 
             final stat = await entity.stat();
-            photos.add(PhotoItem(
-              path: entity.path,
-              name: p.basenameWithoutExtension(entity.path),
-              extension: ext,
-              sizeBytes: stat.size,
-              modifiedDate: stat.modified,
-            ));
+            photos.add(
+              PhotoItem(
+                path: entity.path,
+                name: p.basenameWithoutExtension(entity.path),
+                extension: ext,
+                sizeBytes: stat.size,
+                modifiedDate: stat.modified,
+              ),
+            );
 
             count++;
             if (limit != null && count >= limit) break;
@@ -89,18 +98,18 @@ class FileSystemService {
           if (name.startsWith('.')) continue;
 
           final imageCount = await countPhotosInFolder(entity.path);
-          folders.add(FolderItem(
-            path: entity.path,
-            name: name,
-            imageCount: imageCount,
-          ));
+          folders.add(
+            FolderItem(path: entity.path, name: name, imageCount: imageCount),
+          );
         }
       }
     } catch (e) {
       // تجاهل أخطاء الصلاحيات
     }
 
-    folders.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    folders.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
     return folders;
   }
 
@@ -150,16 +159,17 @@ class FileSystemService {
         if (entity is File) {
           final ext = p.extension(entity.path).toLowerCase();
           final name = p.basenameWithoutExtension(entity.path).toLowerCase();
-          if (supportedExtensions.contains(ext) &&
-              name.contains(lowerQuery)) {
+          if (supportedExtensions.contains(ext) && name.contains(lowerQuery)) {
             final stat = await entity.stat();
-            results.add(PhotoItem(
-              path: entity.path,
-              name: p.basenameWithoutExtension(entity.path),
-              extension: ext,
-              sizeBytes: stat.size,
-              modifiedDate: stat.modified,
-            ));
+            results.add(
+              PhotoItem(
+                path: entity.path,
+                name: p.basenameWithoutExtension(entity.path),
+                extension: ext,
+                sizeBytes: stat.size,
+                modifiedDate: stat.modified,
+              ),
+            );
           }
         }
       }

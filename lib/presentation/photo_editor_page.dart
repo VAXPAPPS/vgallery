@@ -42,7 +42,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color.fromARGB(240, 30, 30, 30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Save Changes', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Save Changes',
+          style: TextStyle(color: Colors.white),
+        ),
         content: const Text(
           'Save over the original file or as a new copy?',
           style: TextStyle(color: Colors.white70),
@@ -50,11 +53,17 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, null),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white38),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Save as Copy', style: TextStyle(color: Colors.amber)),
+            child: const Text(
+              'Save as Copy',
+              style: TextStyle(color: Colors.amber),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -75,7 +84,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(success ? 'Saved' : 'Save failed'),
-            backgroundColor: success ? Colors.green.shade800 : Colors.red.shade800,
+            backgroundColor: success
+                ? Colors.green.shade800
+                : Colors.red.shade800,
           ),
         );
         if (success) Navigator.pop(context);
@@ -86,7 +97,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(path != null ? 'Saved to: $path' : 'Save failed'),
-            backgroundColor: path != null ? Colors.green.shade800 : Colors.red.shade800,
+            backgroundColor: path != null
+                ? Colors.green.shade800
+                : Colors.red.shade800,
           ),
         );
       }
@@ -102,13 +115,21 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           backgroundColor: const Color.fromARGB(240, 30, 30, 30),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('Export Image', style: TextStyle(color: Colors.white)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Export Image',
+            style: TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Format:', style: TextStyle(color: Colors.white54, fontSize: 12)),
+              const Text(
+                'Format:',
+                style: TextStyle(color: Colors.white54, fontSize: 12),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: ['PNG', 'JPG', 'BMP'].map((fmt) {
@@ -119,7 +140,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                       label: Text(fmt),
                       selected: isActive,
                       onSelected: (_) {
-                        setDialogState(() => selectedFormat = fmt.toLowerCase());
+                        setDialogState(
+                          () => selectedFormat = fmt.toLowerCase(),
+                        );
                       },
                       selectedColor: Colors.white.withValues(alpha: 0.2),
                       labelStyle: TextStyle(
@@ -133,7 +156,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
               ),
               if (selectedFormat == 'jpg') ...[
                 const SizedBox(height: 16),
-                const Text('Quality:', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                const Text(
+                  'Quality:',
+                  style: TextStyle(color: Colors.white54, fontSize: 12),
+                ),
                 Slider(
                   value: quality.toDouble(),
                   min: 10,
@@ -148,7 +174,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white38)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white38),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -158,7 +187,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                 'format': selectedFormat,
                 'quality': quality,
               }),
-              child: const Text('Export', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Export',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -177,7 +209,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(success ? 'Exported' : 'Export failed'),
-          backgroundColor: success ? Colors.green.shade800 : Colors.red.shade800,
+          backgroundColor: success
+              ? Colors.green.shade800
+              : Colors.red.shade800,
         ),
       );
     }
@@ -201,9 +235,12 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                   builder: (ctx) => AlertDialog(
                     backgroundColor: const Color.fromARGB(240, 30, 30, 30),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                    title: const Text('Unsaved Changes',
-                        style: TextStyle(color: Colors.white)),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: const Text(
+                      'Unsaved Changes',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     content: const Text(
                       'Save changes before closing?',
                       style: TextStyle(color: Colors.white70),
@@ -214,8 +251,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                           Navigator.pop(ctx);
                           Navigator.pop(context);
                         },
-                        child: const Text('Discard',
-                            style: TextStyle(color: Colors.redAccent)),
+                        child: const Text(
+                          'Discard',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -225,8 +264,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                           Navigator.pop(ctx);
                           _handleSave();
                         },
-                        child: const Text('Save',
-                            style: TextStyle(color: Colors.white)),
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
@@ -242,10 +283,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
             child: Row(
               children: [
                 // اللوحة الجانبية (أدوات التحرير)
-                SizedBox(
-                  width: 280,
-                  child: EditorAdjustments(state: _state),
-                ),
+                SizedBox(width: 280, child: EditorAdjustments(state: _state)),
 
                 // الحاجز
                 Container(
@@ -254,9 +292,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                 ),
 
                 // منطقة المعاينة
-                Expanded(
-                  child: EditorCanvas(state: _state),
-                ),
+                Expanded(child: EditorCanvas(state: _state)),
               ],
             ),
           ),
