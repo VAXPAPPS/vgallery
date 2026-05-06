@@ -280,6 +280,87 @@ class EditorCanvas extends StatelessWidget {
     return matrix;
   }
 
+  Widget _buildColorPreviewImage() {
+    return Transform.scale(
+      scaleX: state.flipHorizontalPreview ? -1 : 1,
+      scaleY: state.flipVerticalPreview ? -1 : 1,
+      child: Transform.rotate(
+        angle: state.rotationAngle * math.pi / 180,
+        child: ColorFiltered(
+          colorFilter: ColorFilter.matrix(_previewColorMatrix()),
+          child: Image.memory(
+            state.currentBytes!,
+            width: state.imageWidth?.toDouble(),
+            height: state.imageHeight?.toDouble(),
+            fit: BoxFit.fill,
+            gaplessPlayback: true,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageRegion() {
+    final imageWidth = state.imageWidth?.toDouble();
+    final imageHeight = state.imageHeight?.toDouble();
+    if (imageWidth == null || imageHeight == null) {
+      return _buildColorPreviewImage();
+    }
+
+    final crop = state.cropRect;
+    if (crop == null) {
+      return SizedBox(
+        width: imageWidth,
+        height: imageHeight,
+        child: _buildColorPreviewImage(),
+      );
+    }
+
+    final left = crop.left.clamp(0.0, imageWidth - 1);
+    final top = crop.top.clamp(0.0, imageHeight - 1);
+    final cropWidth = crop.width.clamp(1.0, imageWidth - left);
+    final cropHeight = crop.height.clamp(1.0, imageHeight - top);
+
+    return SizedBox(
+      width: cropWidth,
+      height: cropHeight,
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minWidth: imageWidth,
+          maxWidth: imageWidth,
+          minHeight: imageHeight,
+          maxHeight: imageHeight,
+          child: Transform.translate(
+            offset: Offset(-left, -top),
+            child: SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: _buildColorPreviewImage(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreview() {
+    final previewWidth = state.previewWidth;
+    final previewHeight = state.previewHeight;
+    if (previewWidth == null || previewHeight == null) {
+      return _buildImageRegion();
+    }
+
+    return FittedBox(
+      fit: BoxFit.contain,
+      child: SizedBox(
+        width: previewWidth,
+        height: previewHeight,
+        child: FittedBox(fit: BoxFit.fill, child: _buildImageRegion()),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (state.currentBytes == null) {
@@ -311,24 +392,33 @@ class EditorCanvas extends StatelessWidget {
                 child: InteractiveViewer(
                   minScale: 0.1,
                   maxScale: 5.0,
-                  child: Transform.scale(
-                    scaleX: state.flipHorizontalPreview ? -1 : 1,
-                    scaleY: state.flipVerticalPreview ? -1 : 1,
-                    child: Transform.rotate(
-                      angle: state.rotationAngle * math.pi / 180,
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.matrix(_previewColorMatrix()),
-                        child: Image.memory(
-                          state.currentBytes!,
-                          fit: BoxFit.contain,
-                          gaplessPlayback: true,
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: _buildPreview(),
                 ),
               ),
             ),
+
+            if (state.previewWidth != null && state.previewHeight != null)
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  child: Text(
+                    '${state.previewWidth!.round()} x ${state.previewHeight!.round()}',
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
+                ),
+              ),
 
             // مؤشر المعالجة
             if (state.isProcessing)

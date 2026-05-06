@@ -14,6 +14,11 @@ class ImageEditorService {
     }
   }
 
+  /// قراءة أبعاد الصورة
+  Future<Map<String, int>?> getImageDimensions(String filePath) async {
+    return await getImageDimensionsIsolate(filePath);
+  }
+
   /// تغيير الحجم
   Future<Uint8List?> resize(
     Uint8List imageBytes, {
@@ -48,14 +53,14 @@ class ImageEditorService {
 
   /// التدوير
   Future<Uint8List?> rotate(Uint8List imageBytes, double angle) async {
-    return await rotateImageIsolate({
-      'imageBytes': imageBytes,
-      'angle': angle,
-    });
+    return await rotateImageIsolate({'imageBytes': imageBytes, 'angle': angle});
   }
 
   /// القلب
-  Future<Uint8List?> flip(Uint8List imageBytes, {bool horizontal = true}) async {
+  Future<Uint8List?> flip(
+    Uint8List imageBytes, {
+    bool horizontal = true,
+  }) async {
     return await flipImageIsolate({
       'imageBytes': imageBytes,
       'horizontal': horizontal,
@@ -87,7 +92,10 @@ class ImageEditorService {
   }
 
   /// تطبيق فلتر
-  Future<Uint8List?> applyFilter(Uint8List imageBytes, ImageFilter filter) async {
+  Future<Uint8List?> applyFilter(
+    Uint8List imageBytes,
+    ImageFilter filter,
+  ) async {
     return await applyFilterIsolate({
       'imageBytes': imageBytes,
       'filter': filter.name,

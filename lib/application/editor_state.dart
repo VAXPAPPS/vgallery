@@ -11,6 +11,11 @@ class EditorState extends ChangeNotifier {
   Uint8List? _currentBytes;
   Uint8List? get currentBytes => _currentBytes;
 
+  int? _imageWidth;
+  int? get imageWidth => _imageWidth;
+  int? _imageHeight;
+  int? get imageHeight => _imageHeight;
+
   String _filePath = '';
   String get filePath => _filePath;
 
@@ -65,9 +70,12 @@ class EditorState extends ChangeNotifier {
 
     _filePath = path;
     _originalBytes = await _editorService.loadImage(path);
+    final dimensions = await _editorService.getImageDimensions(path);
     _currentBytes = _originalBytes != null
         ? Uint8List.fromList(_originalBytes!)
         : null;
+    _imageWidth = dimensions?['width'];
+    _imageHeight = dimensions?['height'];
     _undoStack.clear();
     _redoStack.clear();
     _operations.clear();
@@ -92,6 +100,41 @@ class EditorState extends ChangeNotifier {
     _resizeHeight = null;
     _resizeMaintainAspect = true;
     _activePreviewEdit = null;
+  }
+
+  double? get previewWidth {
+    final size = _previewSize();
+    return size?.$1;
+  }
+
+  double? get previewHeight {
+    final size = _previewSize();
+    return size?.$2;
+  }
+
+  (double, double)? _previewSize() {
+    final originalWidth = _imageWidth?.toDouble();
+    final originalHeight = _imageHeight?.toDouble();
+    if (originalWidth == null || originalHeight == null) return null;
+
+    final cropWidth = _cropRect?.width ?? originalWidth;
+    final cropHeight = _cropRect?.height ?? originalHeight;
+
+    if (_resizeWidth == null && _resizeHeight == null) {
+      return (cropWidth, cropHeight);
+    }
+
+    if (!_resizeMaintainAspect &&
+        _resizeWidth != null &&
+        _resizeHeight != null) {
+      return (_resizeWidth!.toDouble(), _resizeHeight!.toDouble());
+    }
+
+    final aspectRatio = cropWidth / cropHeight;
+    if (_resizeWidth != null) {
+      return (_resizeWidth!.toDouble(), _resizeWidth! / aspectRatio);
+    }
+    return (_resizeHeight! * aspectRatio, _resizeHeight!.toDouble());
   }
 
   void _beginEdit([String? previewEdit]) {
@@ -332,12 +375,16 @@ class EditorState extends ChangeNotifier {
     Uint8List bytes = Uint8List.fromList(_originalBytes!);
 
     if (_cropRect != null) {
+      final x = _cropRect!.left.round().clamp(0, _imageWidth ?? 0);
+      final y = _cropRect!.top.round().clamp(0, _imageHeight ?? 0);
+      final maxWidth = ((_imageWidth ?? x) - x).clamp(1, _imageWidth ?? 1);
+      final maxHeight = ((_imageHeight ?? y) - y).clamp(1, _imageHeight ?? 1);
       final cropped = await _editorService.crop(
         bytes,
-        x: _cropRect!.left.round(),
-        y: _cropRect!.top.round(),
-        width: _cropRect!.width.round(),
-        height: _cropRect!.height.round(),
+        x: x,
+        y: y,
+        width: _cropRect!.width.round().clamp(1, maxWidth),
+        height: _cropRect!.height.round().clamp(1, maxHeight),
       );
       if (cropped == null) return null;
       bytes = cropped;
